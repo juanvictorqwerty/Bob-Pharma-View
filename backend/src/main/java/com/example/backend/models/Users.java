@@ -3,6 +3,7 @@ package com.example.backend.models;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,8 +26,8 @@ public class Users {
     private String id;
 
     @CreationTimestamp
-    @Column(columnDefinition = "DATETIME", name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime created_at = LocalDateTime.now();
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
@@ -37,13 +38,14 @@ public class Users {
     @Column(name = "role", nullable = false)
     private String role;
 
-    @Column(name = "is_blocked", columnDefinition = "TINYINT(1)")
+    @Column(name = "is_blocked", columnDefinition = "BOOLEAN")
     private boolean isBlocked = false;
 
-    @Column(name = "updated_at", columnDefinition = "DATETIME", nullable = true, updatable = false)
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = true)
     private LocalDateTime updatedAt;
 
-    @Column(name = "is_verified", columnDefinition = "TINYINT(1)")
+    @Column(name = "is_verified", columnDefinition = "BOOLEAN")
     private boolean isVerified = false;
 
 }

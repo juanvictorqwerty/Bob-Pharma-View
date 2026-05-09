@@ -3,6 +3,7 @@ package com.example.backend.models;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,14 +31,15 @@ public class medication {
     @Column(name = "medication_description", nullable = false)
     private String description;
 
-    @Column(name = "medication_allowed", nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(name = "medication_allowed", nullable = false, columnDefinition = "BOOLEAN")
     private boolean isAllowed = true;
 
-    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "DATETIME")
     @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", columnDefinition = "DATETIME", nullable = true, updatable = false)
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = true)
     private LocalDateTime updatedAt;
 
 }
