@@ -21,9 +21,6 @@ public class SuperCreationService {
     private SuperCreationRepo superCreationRepo;
 
     @Autowired
-    private emailConfirmationService emailService;
-
-    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
@@ -45,7 +42,8 @@ public class SuperCreationService {
         user.setVerified(false);
 
         superCreationRepo.save(user);
-        emailService.sendConfirmationToken(validation.email());
+        sendConfirmationToken token = new sendConfirmationToken();
+        token.sendEmail(validation.email());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse(201, "Success", "SuperAdmin created successfully"));

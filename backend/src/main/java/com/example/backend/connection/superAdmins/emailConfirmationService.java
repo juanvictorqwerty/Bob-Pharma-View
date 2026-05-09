@@ -20,11 +20,7 @@ public class emailConfirmationService {
 
         Users user = repo.findById(decodedToken).orElse(null);
         if (user != null && user.isVerified()) {
-            return "{\"responseCode\": 400, \"responseStatus\": \"Error\", \"message\": \"Email already verified\"}"; // ←
-                                                                                                                      // Fixed:
-                                                                                                                      // 400
-                                                                                                                      // not
-                                                                                                                      // 200
+            return "{\"responseCode\": 400, \"responseStatus\": \"Error\", \"message\": \"Email already verified\"}";
         }
 
         if (user != null && !user.isVerified()) {
@@ -36,9 +32,4 @@ public class emailConfirmationService {
         return "{\"responseCode\": 400, \"responseStatus\": \"Error\", \"message\": \"Invalid token\"}";
     }
 
-    public void sendConfirmationToken(
-            String email) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'sendConfirmationToken'");
-    }
 }
