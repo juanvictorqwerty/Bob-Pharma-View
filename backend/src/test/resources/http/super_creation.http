@@ -1,0 +1,16 @@
+### Create Super Admin
+POST http://localhost:8080/api/superadmin/creation/create_superAdmin
+Content-Type: application/json
+
+{
+    "email": "test@example.com",
+    "secretCode": "secret123",
+    "password": "password123"
+}
+
+###
+
+### Check Email
+GET http://localhost:8080/api/superadmin/creation/check_email?email=test@example.com
+
+###

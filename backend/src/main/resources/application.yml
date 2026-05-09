@@ -5,20 +5,35 @@ spring:
         # Importation native du fichier .env
         import: "optional:file:.env[.properties]"
 
-datasource:
-    # Utilisation des variables définies dans le .env
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
+    datasource:
+        # Utilisation des variables définies dans le .env
+        url: ${DB_URL}
+        username: ${DB_USERNAME}
+        password: ${DB_PASSWORD}
+        driver-class-name: org.postgresql.Driver
 
-jpa:
-    show-sql: true
-    hibernate:
-        ddl-auto: update
-    properties:
+    jpa:
+        show-sql: true
         hibernate:
-            dialect: org.hibernate.dialect.PostgreSQLDialect
+            ddl-auto: update
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.PostgreSQLDialect
 
-server:
-    port: ${SERVER_PORT:8080}
+    server:
+        port: ${SERVER_PORT:8080}
+
+    mail:
+        host: smtp.gmail.com
+        port: 587
+        username: ${MAIL_USER}
+        password: ${MAIL_PASS}
+        properties:
+            mail:
+                smtp:
+                    auth: true
+                    starttls:
+                        enable: true
+                    timeout: 5000
+                    connectiontimeout: 5000
+                    writetimeout: 5000
