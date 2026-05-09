@@ -3,6 +3,7 @@ package com.example.backend.models;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,7 +31,8 @@ public class Stock {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", columnDefinition = "DATETIME", nullable = true, updatable = false)
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = true)
     private LocalDateTime updatedAt;
 
     @ManyToOne
@@ -42,6 +44,9 @@ public class Stock {
     private medication medication;
 
     @Column(name = "stock_count", nullable = false)
-    private int stock_count;
+    private int stockCount;
+
+    @Column(name = "is_authorized", nullable = false, columnDefinition = "BOOLEAN")
+    private boolean isAuthorized = true;
 
 }
