@@ -1,0 +1,24 @@
+spring:
+    application:
+        name: backend
+    config:
+        # Importation native du fichier .env
+        import: "optional:file:.env[.properties]"
+
+datasource:
+    # Utilisation des variables définies dans le .env
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+jpa:
+    show-sql: true
+    hibernate:
+        ddl-auto: update
+    properties:
+        hibernate:
+            dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+    port: ${SERVER_PORT:8080}
