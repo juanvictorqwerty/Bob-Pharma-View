@@ -5,6 +5,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import com.example.backend.models.Users;
+
 @Service
 public class sendConfirmationToken {
 
@@ -18,12 +20,15 @@ public class sendConfirmationToken {
     private JwtService jwtService;
 
     public String sendConfirmationToken(String email) {
-
-        if (!superCreationRepo.existsById(email)) {
+        Users user = superCreationRepo.findById(email).orElse(null);
+        if (user == null) {
             return "{'responseCode': 400, 'responseStatus': 'Error', 'message': 'Email does not exist'}";
         }
+        if (user.isVerified() == true) {
+            return "{'responseCode': 400, 'responseStatus': 'Error', 'message': 'Email already verified'}";
+        }
 
-        String token = jwtService.generateToken(email);
+        String token = jwtService.generateToken(email, 3600000);
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
@@ -33,15 +38,5 @@ public class sendConfirmationToken {
         emailSender.send(message);
 
         return "{'responseCode': 200, 'responseStatus': 'Success', 'message': 'Confirmation token sent'}";
-    }
-
-    public void sendEmail(String email) {
-        String token = jwtService.generateToken(email);
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("Confirm your email");
-        message.setText("Click here to confirm: http://localhost:8080/api/superadmin/confirmation/" + token);
-
-        emailSender.send(message);
     }
 }
