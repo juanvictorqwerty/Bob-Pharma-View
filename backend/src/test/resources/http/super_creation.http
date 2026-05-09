@@ -3,9 +3,9 @@ POST http://localhost:8080/api/superadmin/creation/create_superAdmin
 Content-Type: application/json
 
 {
-    "email": "test@example.com",
-    "secretCode": "secret123",
-    "password": "password123"
+    "email": "juanvictor.mike@ictuniversity.edu.cm",
+    "secretCode": "0000099999",
+    "password": "12345678"
 }
 
 ###

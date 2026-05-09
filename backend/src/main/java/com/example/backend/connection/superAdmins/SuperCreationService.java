@@ -33,7 +33,7 @@ public class SuperCreationService {
                     .body(new ApiResponse(400, "Error", "Invalid secret code"));
         }
 
-        if (superCreationRepo.existsById(validation.email())) {
+        if (superCreationRepo.existsByEmail(validation.email())) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ApiResponse(409, "Error", "Email already exists"));
         }

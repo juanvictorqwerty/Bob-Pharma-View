@@ -20,7 +20,7 @@ public class sendConfirmationToken {
     private JwtService jwtService;
 
     public String sendConfirmationToken(String email) {
-        Users user = superCreationRepo.findById(email).orElse(null);
+        Users user = superCreationRepo.findByEmail(email).orElse(null);
         if (user == null) {
             return "{'responseCode': 400, 'responseStatus': 'Error', 'message': 'Email does not exist'}";
         }

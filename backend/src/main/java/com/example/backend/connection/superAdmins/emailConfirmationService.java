@@ -19,7 +19,7 @@ public class emailConfirmationService {
 
     public String confirmCode(String token) {
         String decodedToken = jwtUtils.extractSubject(token);
-        Users user = repo.findById(decodedToken).orElse(null);
+        Users user = repo.findByEmail(decodedToken).orElse(null);
 
         if (user != null && user.isVerified()) {
             return "{\"responseCode\": 400, \"responseStatus\": \"Error\", \"message\": \"Email already verified\"}";
