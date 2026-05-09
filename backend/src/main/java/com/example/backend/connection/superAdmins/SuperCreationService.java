@@ -23,6 +23,9 @@ public class SuperCreationService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    private sendConfirmationToken token;
+
     @Transactional
     public ResponseEntity<ApiResponse> createSuperAdmin(SuperCreationValidation validation) {
         if (!validation.secretCode().equals(systemSecret)) {
@@ -42,7 +45,7 @@ public class SuperCreationService {
         user.setVerified(false);
 
         superCreationRepo.save(user);
-        sendConfirmationToken token = new sendConfirmationToken();
+
         token.sendEmail(validation.email());
 
         return ResponseEntity.status(HttpStatus.CREATED)
