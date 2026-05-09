@@ -46,7 +46,7 @@ public class SuperCreationService {
 
         superCreationRepo.save(user);
 
-        token.sendEmail(validation.email());
+        token.sendConfirmationToken(validation.email());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse(201, "Success", "SuperAdmin created successfully"));

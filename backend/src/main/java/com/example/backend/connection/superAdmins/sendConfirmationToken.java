@@ -23,7 +23,7 @@ public class sendConfirmationToken {
             return "{'responseCode': 400, 'responseStatus': 'Error', 'message': 'Email does not exist'}";
         }
 
-        String token = jwtService.generateToken(email);
+        String token = jwtService.generateToken(email, 3600000);
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
@@ -33,15 +33,5 @@ public class sendConfirmationToken {
         emailSender.send(message);
 
         return "{'responseCode': 200, 'responseStatus': 'Success', 'message': 'Confirmation token sent'}";
-    }
-
-    public void sendEmail(String email) {
-        String token = jwtService.generateToken(email);
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("Confirm your email");
-        message.setText("Click here to confirm: http://localhost:8080/api/superadmin/confirmation/" + token);
-
-        emailSender.send(message);
     }
 }
