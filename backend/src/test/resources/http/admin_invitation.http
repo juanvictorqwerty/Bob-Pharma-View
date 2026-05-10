@@ -2,8 +2,9 @@
 POST http://localhost:8080/admins/send-invite
 Content-Type: application/json
 
-"juanvictor.mike@ictuniversity.edu.cm"
-
+{
+    "email": "juanvictor.mike@ictuniversity.edu.cm"
+}
 ###
 
 ### Accept Admin Invitation

@@ -24,8 +24,9 @@ public class sendingInviteService {
     private String frontendUrl;
 
     public String sendInvite(String email) {
-        sendingInviteValidation validator = new sendingInviteValidation(inviteRepo);
-        validator.validate(email);
+        if (inviteRepo.findByEmail(email).isPresent()) {
+            return "{'responseCode':'400','responseStatus':'Failure','message':'Email already exists'}";
+        }
 
         String token = jwtService.generateToken(email, 3600);// 1 hour
 
