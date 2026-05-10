@@ -40,6 +40,7 @@ public class invitePharmacistService {
         inviteCodes.setCode(randomString);
         inviteCodes.setEmail(email);
         inviteCodes.setRole("pharmacist");
+        inviteCodes.setExpiryDate(java.time.LocalDateTime.now().plusDays(1));
         inviteCodes.setUsed(false);
 
         invitePharmacistRepo.save(inviteCodes);
