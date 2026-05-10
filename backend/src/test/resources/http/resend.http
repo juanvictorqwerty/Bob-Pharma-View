@@ -1,4 +1,4 @@
 ### Resend Token
-GET http://localhost:8080/api/superadmin/resend/[EMAIL_ADDRESS]
+GET http://localhost:8080/api/superadmin/resend/juanvictor.mike@ictuniversity.edu.cm
 
 ###
