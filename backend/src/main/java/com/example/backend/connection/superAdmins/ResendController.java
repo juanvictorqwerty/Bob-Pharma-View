@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ResendController {
 
     @Autowired
-    private sendConfirmationToken token;
+    private sendConfirmationTokenService token;
 
     @GetMapping("/{email}")
     public String resendToken(@PathVariable String email) {

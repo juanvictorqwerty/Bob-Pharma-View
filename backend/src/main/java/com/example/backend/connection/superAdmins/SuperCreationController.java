@@ -18,10 +18,11 @@ public class SuperCreationController {
     private SuperCreationService superCreationService;
 
     @Autowired
-    private sendConfirmationToken emailVerificationService;
+    private sendConfirmationTokenService emailVerificationService;
 
     @PostMapping("create_superAdmin")
-    public ResponseEntity<ApiResponse> createSuperAdmin(@Validated @RequestBody SuperCreationValidation superCreationValidation) {
+    public ResponseEntity<ApiResponse> createSuperAdmin(
+            @Validated @RequestBody SuperCreationValidation superCreationValidation) {
 
         return superCreationService.createSuperAdmin(superCreationValidation);
     }

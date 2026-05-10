@@ -24,7 +24,7 @@ public class SuperCreationService {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    private sendConfirmationToken token;
+    private sendConfirmationTokenService token;
 
     @Transactional
     public ResponseEntity<ApiResponse> createSuperAdmin(SuperCreationValidation validation) {

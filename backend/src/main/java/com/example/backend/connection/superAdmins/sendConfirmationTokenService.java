@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import com.example.backend.models.Users;
 
 @Service
-public class sendConfirmationToken {
+public class sendConfirmationTokenService {
 
     @Autowired
     private JavaMailSender emailSender;
