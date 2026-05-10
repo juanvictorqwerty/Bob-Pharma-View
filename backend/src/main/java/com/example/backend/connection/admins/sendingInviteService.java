@@ -27,7 +27,7 @@ public class sendingInviteService {
         sendingInviteValidation validator = new sendingInviteValidation(inviteRepo);
         validator.validate(email);
 
-        String token = jwtService.generateToken(email, 3600 * 1000);
+        String token = jwtService.generateToken(email, 3600);// 1 hour
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);

@@ -42,12 +42,14 @@ public class acceptInvitationService {
 
             inviteRepo.save(user);
 
+            String newToken = jwtService.generateToken(email, 3600 * 24 * 30);
+
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ApiResponse(200, "Success", "Admin created successfully"));
+                    .body(new ApiResponse(200, "Success", newToken));
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponse(401, "Error", "Invalid or expired token"));
+                    .body(new ApiResponse(400, "Error", "Invalid or expired token"));
         }
     }
 }
