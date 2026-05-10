@@ -1,6 +1,7 @@
 package com.example.backend.connection.admins;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -8,10 +9,10 @@ import org.springframework.stereotype.Service;
 import com.example.backend.connection.superAdmins.JwtService;
 
 @Service
-public class sendingInviteService<Invite> {
+public class sendingInviteService {
 
     @Autowired
-    private sendingInviteRepo<Invite> inviteRepo;
+    private sendingInviteRepo inviteRepo;
 
     @Autowired
     private JwtService jwtService;
@@ -19,17 +20,20 @@ public class sendingInviteService<Invite> {
     @Autowired
     private JavaMailSender emailSender;
 
+    @Value("${FRONTEND_URL:http://localhost:3000}")
+    private String frontendUrl;
+
     public String sendInvite(String email) {
         sendingInviteValidation validator = new sendingInviteValidation(inviteRepo);
         validator.validate(email);
 
-        String token = jwtService.generateToken(email, 3600);
+        String token = jwtService.generateToken(email, 3600 * 1000);
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
         message.setSubject("Invitation to join Bob-Pharma");
         message.setText(
-                "Click the link to start your journey with us: http://localhost:8080/api/admin/invitation/"
+                "Click the link to start your journey with us: " + frontendUrl + "/accept-invitation?token="
                         + token);
         emailSender.send(message);
 

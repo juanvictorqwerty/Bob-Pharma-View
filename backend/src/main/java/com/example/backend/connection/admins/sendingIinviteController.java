@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/admins")
 public class sendingIinviteController {
     @Autowired
-    private sendingInviteService<?> inviteService;
+    private sendingInviteService inviteService;
 
     @PostMapping("/send-invite")
     public String sendInvite(@RequestBody String email) {

@@ -1,14 +1,14 @@
 package com.example.backend.connection.admins;
 
 public class sendingInviteValidation {
-    private final sendingInviteRepo<?> inviteRepo;
+    private final sendingInviteRepo inviteRepo;
 
-    public sendingInviteValidation(sendingInviteRepo<?> inviteRepo) {
+    public sendingInviteValidation(sendingInviteRepo inviteRepo) {
         this.inviteRepo = inviteRepo;
     }
 
     public void validate(String email) {
-        if (email.isEmpty() || email == null) {
+        if (email == null || email.isEmpty()) {
             throw new RuntimeException("Email is required");
         }
 

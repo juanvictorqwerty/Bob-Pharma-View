@@ -5,9 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.backend.models.Users;
 
-import java.util.Optional;
-
 @Repository
-public interface sendingInviteRepo extends JpaRepository<Users, String> {
-    Optional<Users> findByEmail(String email);
+public interface acceptInvitationRepo extends JpaRepository<Users, String> {
+    boolean existsByEmail(String email);
 }
