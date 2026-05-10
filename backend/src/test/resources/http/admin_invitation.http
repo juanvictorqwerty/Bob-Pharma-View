@@ -3,17 +3,17 @@ POST http://localhost:8080/admins/send-invite
 Content-Type: application/json
 
 {
-    "email": "juanvictor.mike@ictuniversity.edu.cm"
+    "email": "juanvictorqwerty@gmail.com"
 }
 ###
 
 ### Accept Admin Invitation
 POST http://localhost:8080/admins/accept-invitation
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFudmljdG9ycXdlcnR5QGdtYWlsLmNvbSIsImlhdCI6MTc3ODQyNzE4NCwiZXhwIjoxNzc4NDI3MTg4fQ.dzY-WtGrmI44wrRWgHPZDxtxRkFLqCfxPAp5Gn3A1xo
 
-{   
-    "email": "juanvictor.mike@ictuniversity.edu.cm",
+
+{
     "password": "password123"
 }
 
