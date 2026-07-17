@@ -7,6 +7,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Index;
 import lombok.Getter;
@@ -34,10 +36,12 @@ public class Stock {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    @Column(name = "pharmacy_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "pharmacy_id", nullable = false)
     private UUID pharmacyId;
 
-    @Column(name = "drug_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "drug_id", nullable = false)
     private UUID drugId;
 
     @Column(name = "quantity", nullable = false)
