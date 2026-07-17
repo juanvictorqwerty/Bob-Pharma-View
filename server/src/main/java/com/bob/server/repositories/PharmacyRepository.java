@@ -1,0 +1,31 @@
+package com.bob.server.repositories;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.locationtech.jts.geom.Point;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import com.bob.server.model.Pharmacy;
+
+@Repository
+public interface PharmacyRepository extends JpaRepository<Pharmacy, UUID> {
+    boolean existsByNameAndRegionAndCity(String name, String region, String city);
+    
+    List<Pharmacy> findByNameContainingIgnoreCase(String name);
+    List<Pharmacy> findByRegion(String region);
+    List<Pharmacy> findByCity(String city);
+    List<Pharmacy> findByIsApproved(boolean isApproved);
+    List<Pharmacy> findByIsActive(boolean isActive);
+    List<Pharmacy> findByRegionAndCity(String region, String city);
+    
+    @Query(value = "SELECT * FROM pharmacy p WHERE p.location IS NOT NULL AND " +
+           "ST_DWithin(p.location, ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326), :distanceInMeters)", 
+           nativeQuery = true)
+    List<Pharmacy> findNearbyPharmacies(@Param("latitude") double latitude, 
+                                        @Param("longitude") double longitude, 
+                                        @Param("distanceInMeters") double distanceInMeters);
+}

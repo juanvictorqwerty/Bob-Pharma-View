@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.locationtech.jts.geom.Point;
 import org.springframework.boot.jackson.autoconfigure.JacksonProperties.Json;
 
 import jakarta.persistence.Column;
@@ -49,6 +50,9 @@ public class Pharmacy {
 
     @Column(name = "longitude", nullable = false)
     private String longitude;
+    
+    @Column(name = "location", nullable = true)
+    private Point location;
     
     @Column(name = "latitude", nullable = false)
     private String latitude;
