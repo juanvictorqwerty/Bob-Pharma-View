@@ -8,4 +8,5 @@ dependencies = [
     "django==6.0.7",
     "django-ninja>=1.6.2",
     "psycopg2-binary>=2.9.12",
+    "supertokens-python>=0.31.3",
 ]
