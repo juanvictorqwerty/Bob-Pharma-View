@@ -1,2 +1,9 @@
 ##Venv##
 .venv
+_Project/__pycache__/
+authentication/__pycache__/
+authentication/migrations/__pycache__/
+drug_update/__pycache__/
+drug_update/migrations/__pycache__/
+search/__pycache__/
+search/migrations/__pycache__/
