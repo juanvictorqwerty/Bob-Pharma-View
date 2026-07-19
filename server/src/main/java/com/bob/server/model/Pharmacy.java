@@ -40,7 +40,6 @@ public class Pharmacy {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "creator_id", nullable = false)
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
     private Users creatorId;
