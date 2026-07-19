@@ -38,11 +38,11 @@ public class Stock {
 
     @ManyToOne
     @JoinColumn(name = "pharmacy_id", nullable = false)
-    private UUID pharmacyId;
+    private Pharmacy pharmacyId;
 
     @ManyToOne
     @JoinColumn(name = "drug_id", nullable = false)
-    private UUID drugId;
+    private Drug drugId;
 
     @Column(name = "quantity", nullable = false)
     private int quantity;

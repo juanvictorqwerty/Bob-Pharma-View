@@ -3,15 +3,13 @@ package com.bob.server.model;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 import org.locationtech.jts.geom.Point;
-import org.springframework.boot.jackson.autoconfigure.JacksonProperties.Json;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,6 +40,11 @@ public class Pharmacy {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "creator_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "creator_id", nullable = false)
+    private Users creatorId;
+
     @Column(name = "region", nullable = false)
     private String region;
 
@@ -65,9 +68,5 @@ public class Pharmacy {
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive=true;
-    
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "guard_program", nullable = true)
-    private Json guardProgram;
-    
+
 }

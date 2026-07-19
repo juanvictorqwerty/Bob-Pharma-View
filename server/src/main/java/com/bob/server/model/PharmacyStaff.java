@@ -31,11 +31,11 @@ public class PharmacyStaff {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UUID userId;
+    private Users userId;
 
     @ManyToOne
     @JoinColumn(name = "pharmacy_id", nullable = false)
-    private UUID pharmacyId;
+    private Pharmacy pharmacyId;
 
     @Column(name = "role", nullable = false)
     private String role;
