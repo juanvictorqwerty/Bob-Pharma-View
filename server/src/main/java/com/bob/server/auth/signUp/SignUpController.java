@@ -16,22 +16,14 @@ public class SignUpController {
     }
     
     @PostMapping("/api/Signup-admin")
-    public ResponseEntity<?> registerAdmin(@RequestBody AdminSignUpDTO adminSignUpDTO) {
-        try {
-            UserResponse response = signUpService.registerAdmin(adminSignUpDTO);
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<UserResponse> registerAdmin(@RequestBody AdminSignUpDTO adminSignUpDTO) {
+        UserResponse response = signUpService.registerAdmin(adminSignUpDTO);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
     
     @PostMapping("/api/Signup-users")
-    public ResponseEntity<?> registerUser(@RequestBody SignUpDTO signUpDTO) {
-        try {
-            UserResponse response = signUpService.registerUser(signUpDTO);
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<UserResponse> registerUser(@RequestBody SignUpDTO signUpDTO) {
+        UserResponse response = signUpService.registerUser(signUpDTO);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }
