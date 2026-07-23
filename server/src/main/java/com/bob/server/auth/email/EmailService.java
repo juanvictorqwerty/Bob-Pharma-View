@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class EmailService {
         String email = inviteDTO.getEmail();
         
         if (usersRepository.existsByEmail(email)) {
-            throw new RuntimeException("Email is already registered as a user");
+            throw new IllegalArgumentException("Email is already registered as a user");
         }
         
         String inviteCode = generateInviteCode();
@@ -60,7 +61,7 @@ public class EmailService {
     public Code createResetPasswordCode(String email) {
         // Check if user exists
         if (!usersRepository.existsByEmail(email)) {
-            throw new RuntimeException("Email not found");
+            throw new IllegalArgumentException("Email not found");
         }
         
         // Invalidate any existing unused reset codes for this email
@@ -90,14 +91,14 @@ public class EmailService {
     
     public Code verifyCode(String email, String code, String category) {
         Code codeEntity = codeRepository.findByEmailAndCodeAndCategory(email, code, category)
-            .orElseThrow(() -> new RuntimeException("Invalid code"));
+            .orElseThrow(() -> new IllegalArgumentException("Invalid code"));
         
         if (codeEntity.isUsed()) {
-            throw new RuntimeException("Code has already been used");
+            throw new IllegalStateException("Code has already been used");
         }
         
         if (codeEntity.getExpiresAt().isBefore(Instant.now())) {
-            throw new RuntimeException("Code has expired");
+            throw new IllegalStateException("Code has expired");
         }
         
         return codeEntity;
@@ -130,7 +131,7 @@ public class EmailService {
             
             mailSender.send(message);
         } catch (MessagingException e) {
-            throw new RuntimeException("Failed to send invite email: " + e.getMessage());
+            throw new MailSendException("Failed to send invite email: " + e.getMessage());
         }
     }
     
@@ -148,7 +149,7 @@ public class EmailService {
             
             mailSender.send(message);
         } catch (MessagingException e) {
-            throw new RuntimeException("Failed to send reset password email: " + e.getMessage());
+            throw new MailSendException("Failed to send reset password email: " + e.getMessage());
         }
     }
     
@@ -166,7 +167,7 @@ public class EmailService {
                 return template.replace("{{resetCode}}", code);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load email template: " + e.getMessage());
+            throw new IllegalStateException("Failed to load email template: " + e.getMessage());
         }
     }
 }
