@@ -1,5 +1,6 @@
 package com.bob.server.repositories;
 
+import java.time.Instant;
 import java.util.UUID;
 import java.util.Optional;
 import java.util.List;
@@ -11,4 +12,8 @@ public interface TokenRepository extends JpaRepository<Token, UUID> {
     Optional<Token> findByValue(String value);
     List<Token> findByUserId(UUID userId);
     List<Token> findByUserIdAndIsRevoked(UUID userId, boolean isRevoked);
+    
+    Optional<Token> findByValueAndIsRevokedFalseAndExpiresAtAfter(String value, Instant expiresAt);
+    List<Token> findByUserIdAndIsRevokedFalseAndExpiresAtAfter(UUID userId, Instant expiresAt);
+    boolean existsByUserIdAndIsRevokedFalseAndLastRenewedAtAfter(UUID userId, Instant lastRenewedAt);
 }

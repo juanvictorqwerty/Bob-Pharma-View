@@ -6,31 +6,41 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.bob.server.auth.token.JwtService;
+import com.bob.server.auth.token.TokenService;
 import com.bob.server.model.Code;
+import com.bob.server.model.Token;
 import com.bob.server.model.Users;
 import com.bob.server.repositories.CodeRepository;
 import com.bob.server.repositories.UsersRepository;
 
 @Service
 public class SignUpService {
+
+    public static class SignUpException extends RuntimeException {
+        public SignUpException(String message) {
+            super(message);
+        }
+    }
     
     private final UsersRepository usersRepository;
     private final CodeRepository codeRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final TokenService tokenService;
     
-    public SignUpService(UsersRepository usersRepository, CodeRepository codeRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public SignUpService(UsersRepository usersRepository, CodeRepository codeRepository, PasswordEncoder passwordEncoder, JwtService jwtService, TokenService tokenService) {
         this.usersRepository = usersRepository;
         this.codeRepository = codeRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.tokenService = tokenService;
     }
     
     public UserResponse registerUser(SignUpDTO signUpDTO) {
         String email = signUpDTO.getEmail();
         
         if (usersRepository.existsByEmail(email)) {
-            throw new RuntimeException(SignUpValidation.EMAIL_ALREADY_EXISTS.getMessage());
+            throw new SignUpException(SignUpValidation.EMAIL_ALREADY_EXISTS.getMessage());
         }
         
         Users user = new Users();
@@ -45,7 +55,10 @@ public class SignUpService {
         
         String token = jwtService.generateToken(savedUser.getEmail(), savedUser.getRole());
         
-        return new UserResponse(savedUser.getEmail(), token);
+        // Save token to database
+        Token savedToken = tokenService.saveToken(token, savedUser);
+        
+        return new UserResponse(savedUser.getEmail(), savedToken.getValue());
     }
     
     public UserResponse registerAdmin(AdminSignUpDTO adminSignUpDTO) {
@@ -53,22 +66,22 @@ public class SignUpService {
         String inviteCode = adminSignUpDTO.getInviteCode();
         
         if (usersRepository.existsByEmail(email)) {
-            throw new RuntimeException(SignUpValidation.EMAIL_ALREADY_EXISTS.getMessage());
+            throw new SignUpException(SignUpValidation.EMAIL_ALREADY_EXISTS.getMessage());
         }
         
         Code code = codeRepository.findByCode(inviteCode)
-            .orElseThrow(() -> new RuntimeException(SignUpValidation.INVITE_CODE_INVALID.getMessage()));
+            .orElseThrow(() -> new SignUpException(SignUpValidation.INVITE_CODE_INVALID.getMessage()));
         
         if (code.isUsed()) {
-            throw new RuntimeException(SignUpValidation.INVITE_CODE_ALREADY_USED.getMessage());
+            throw new SignUpException(SignUpValidation.INVITE_CODE_ALREADY_USED.getMessage());
         }
         
         if (code.getExpiresAt().isBefore(Instant.now())) {
-            throw new RuntimeException(SignUpValidation.INVITE_CODE_EXPIRED.getMessage());
+            throw new SignUpException(SignUpValidation.INVITE_CODE_EXPIRED.getMessage());
         }
         
         if (!code.getEmail().equals(email)) {
-            throw new RuntimeException(SignUpValidation.INVITE_CODE_INVALID.getMessage());
+            throw new SignUpException(SignUpValidation.INVITE_CODE_INVALID.getMessage());
         }
         
         Users user = new Users();
@@ -86,6 +99,9 @@ public class SignUpService {
         
         String token = jwtService.generateToken(savedUser.getEmail(), savedUser.getRole());
         
-        return new UserResponse(savedUser.getEmail(), token);
+        // Save token to database
+        Token savedToken = tokenService.saveToken(token, savedUser);
+        
+        return new UserResponse(savedUser.getEmail(), savedToken.getValue());
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import com.bob.server.auth.email.EmailException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -17,6 +18,16 @@ public class GlobalExceptionHandler {
             ex.getMessage()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+    
+    @ExceptionHandler(EmailException.class)
+    public ResponseEntity<ErrorResponse> handleEmailException(EmailException ex, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            ex.getMessage()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
     
     @ExceptionHandler(RuntimeException.class)

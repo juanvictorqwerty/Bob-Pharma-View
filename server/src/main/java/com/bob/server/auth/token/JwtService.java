@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +39,12 @@ public class JwtService {
         return createToken(claims, email);
     }
 
+    public String generateTokenWithExpiration(String email, String role, long expiration) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
+        return createTokenWithExpiration(claims, email, expiration);
+    }
+
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
@@ -53,11 +60,23 @@ public class JwtService {
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
+        Instant now = Instant.now();
         return Jwts.builder()
                 .claims(claims)
                 .subject(subject)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(now.plusMillis(jwtExpiration)))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    private String createTokenWithExpiration(Map<String, Object> claims, String subject, long expiration) {
+        Instant now = Instant.now();
+        return Jwts.builder()
+                .claims(claims)
+                .subject(subject)
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(now.plusMillis(expiration)))
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -71,11 +90,11 @@ public class JwtService {
     }
 
     private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        return extractExpiration(token).isBefore(Instant.now());
     }
 
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    private Instant extractExpiration(String token) {
+        return extractClaim(token, claims -> claims.getExpiration().toInstant());
     }
 
     private SecretKey getSigningKey() {

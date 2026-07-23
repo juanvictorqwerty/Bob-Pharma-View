@@ -30,6 +30,16 @@
 # ----------------------------------------------------------------------------
 
 set -euf
+if [ -f ".env" ]; then
+  while IFS='=' read -r key value || [ -n "$key" ]; do
+    case "$key" in
+      ''|\#*) continue ;;
+    esac
+    key=$(printf '%s' "$key" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    value=$(printf '%s' "$value" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    export "$key=$value"
+  done < ".env"
+fi
 [ "${MVNW_VERBOSE-}" != debug ] || set -x
 
 # OS specific support.
