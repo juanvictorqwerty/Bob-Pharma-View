@@ -11,9 +11,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.bob.server.model.Code;
+import com.bob.server.model.Users;
 import com.bob.server.repositories.CodeRepository;
 import com.bob.server.repositories.UsersRepository;
 
@@ -34,6 +36,24 @@ public class EmailService {
     }
     
     public Code createInvite(EmailDTO inviteDTO) {
+        // Check if current user is authenticated and has Admin role
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new SecurityException("You must be logged in to create invites");
+        }
+        
+        // Get the current user's details
+        Users currentUser = (Users) authentication.getPrincipal();
+        
+        // Check if user has Admin role
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_Admin"));
+        
+        if (!isAdmin) {
+            throw new SecurityException("Only admins can create invite codes");
+        }
+        
         String email = inviteDTO.getEmail();
         
         if (usersRepository.existsByEmail(email)) {

@@ -19,10 +19,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UsersRepository usersRepository;
+    private final TokenService tokenService;
 
-    public JwtAuthFilter(JwtService jwtService, UsersRepository usersRepository) {
+    public JwtAuthFilter(JwtService jwtService, UsersRepository usersRepository, TokenService tokenService) {
         this.jwtService = jwtService;
         this.usersRepository = usersRepository;
+        this.tokenService = tokenService;
     }
 
     @Override
@@ -58,14 +60,26 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Users user = usersRepository.findByEmail(email);
                 
                 if (user != null && jwtService.isTokenValid(jwt)) {
-                    // Token is valid, set authentication
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            user, null, null);
+                    // Validate token against database
+                    var tokenFromDb = tokenService.validateToken(jwt);
                     
-                    authToken.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request));
-                    
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    if (tokenFromDb != null) {
+                        // Token is valid in database, set authentication
+                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                                user, null, null);
+                        
+                        authToken.setDetails(
+                                new WebAuthenticationDetailsSource().buildDetails(request));
+                        
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                        
+                        // Check if token needs renewal (once per day)
+                        var renewedToken = tokenService.renewToken(jwt);
+                        if (renewedToken != null && !renewedToken.getValue().equals(jwt)) {
+                            // Token was renewed, add new token to response header
+                            response.setHeader("Renewed-Token", renewedToken.getValue());
+                        }
+                    }
                 }
             }
         } catch (Exception e) {

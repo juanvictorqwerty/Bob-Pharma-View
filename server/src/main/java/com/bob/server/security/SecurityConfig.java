@@ -45,6 +45,8 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui.html").permitAll()
                 .requestMatchers("/swagger-resources/**").permitAll()
                 .requestMatchers("/webjars/**").permitAll()
+                // Protect invite endpoint - only admins can invite
+                .requestMatchers("/api/invite").hasRole("Admin")
                 // All other requests require authentication
                 .anyRequest().authenticated()
             )

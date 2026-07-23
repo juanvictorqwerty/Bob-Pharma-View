@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-add-last-renewed-at-to-token
+      author: system
+      changes:
+        - addColumn:
+            tableName: token
+            columns:
+              - column:
+                  name: last_renewed_at
+                  type: timestamp
+                  constraints:
+                    nullable: true
+        - createIndex:
+            tableName: token
+            indexName: idx_token_last_renewed_at
+            columns:
+              - column:
+                  name: last_renewed_at

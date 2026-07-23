@@ -51,4 +51,7 @@ public class Token {
 
     @Column(name = "is_revoked", nullable = false)
     private boolean isRevoked=false;
+    
+    @Column(name = "last_renewed_at")
+    private Instant lastRenewedAt;
 }

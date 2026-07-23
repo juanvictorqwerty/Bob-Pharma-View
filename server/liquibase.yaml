@@ -1,0 +1,21 @@
+# Liquibase Configuration
+# Database connection properties for running Liquibase migrations
+# IMPORTANT: Copy values from .env file - do not hardcode credentials
+
+# Database Connection
+url: jdbc:postgresql://${env.DB_HOST}:${env.DB_PORT}/${env.DB_NAME}
+username: ${env.DB_USER}
+password: ${env.DB_PASSWORD}
+driver: org.postgresql.Driver
+
+# Changelog
+changeLogFile: src/main/resources/db/changelog/db.changelog-master.yaml
+
+# Contexts
+# contexts: development,production
+
+# Default Schema
+# defaultSchemaName: public
+
+# Optional: Enable SQL logging
+# logLevel: info
