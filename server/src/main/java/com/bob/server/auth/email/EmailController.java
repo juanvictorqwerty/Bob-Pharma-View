@@ -1,4 +1,4 @@
-package com.bob.server.auth.invite;
+package com.bob.server.auth.email;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,16 +7,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class InviteController {
+public class EmailController {
     
-    private final InviteService inviteService;
+    private final EmailService inviteService;
     
-    public InviteController(InviteService inviteService) {
+    public EmailController(EmailService inviteService) {
         this.inviteService = inviteService;
     }
     
     @PostMapping("/api/invite")
-    public ResponseEntity<?> createInvite(@RequestBody InviteDTO inviteDTO) {
+    public ResponseEntity<?> createInvite(@RequestBody EmailDTO inviteDTO) {
         try {
             return new ResponseEntity<>(inviteService.createInvite(inviteDTO), HttpStatus.CREATED);
         } catch (RuntimeException e) {

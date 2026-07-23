@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You're Invited!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .code-box {
+            background-color: #f8f9fa;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        .code {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+            letter-spacing: 8px;
+            font-family: 'Courier New', monospace;
+        }
+        .message {
+            color: #555;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #777;
+            font-size: 14px;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 You're Invited!</h1>
+        </div>
+        <div class="content">
+            <p class="message">Hello!</p>
+            <p class="message">You have been invited to join <strong>Bob Pharma</strong>. Use the invite code below to complete your registration:</p>
+            
+            <div class="code-box">
+                <div class="code">{{inviteCode}}</div>
+            </div>
+            
+            <p class="message">This invite code will expire in <strong>4 hours</strong> for security purposes.</p>
+            
+            <div class="warning">
+                <strong>⚠️ Important:</strong> If you didn't request this invitation, please ignore this email.
+            </div>
+        </div>
+        <div class="footer">
+            <p>© 2024 Bob Pharma. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
+
+</parameter>
+<task_progress>
+- [x] Analyzed existing email service and code structure
+- [x] Reviewed Code entity and database schema
+- [x] Checked dependencies and configuration
+- [x] Configure email properties in application.yml
+- [x] Implement email sending functionality
+- [ ] Add reset password endpoint
+- [x] Add email templates
+- [ ] Test the complete flow
+</parameter>
+</write_to_file>
