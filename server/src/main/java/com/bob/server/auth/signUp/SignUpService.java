@@ -1,6 +1,7 @@
 package com.bob.server.auth.signUp;
 
 import java.time.Instant;
+import java.util.Locale;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -62,14 +63,15 @@ public class SignUpService {
     }
     
     public UserResponse registerAdmin(AdminSignUpDTO adminSignUpDTO) {
-        String email = adminSignUpDTO.getEmail();
-        String inviteCode = adminSignUpDTO.getInviteCode();
+        String email = adminSignUpDTO.getEmail() == null ? null : adminSignUpDTO.getEmail().trim();
+        String inviteCode = adminSignUpDTO.getInviteCode() == null ? null : adminSignUpDTO.getInviteCode().trim();
         
         if (usersRepository.existsByEmail(email)) {
             throw new SignUpException(SignUpValidation.EMAIL_ALREADY_EXISTS.getMessage());
         }
         
-        Code code = codeRepository.findByCode(inviteCode)
+        String normalizedInviteCode = inviteCode == null ? null : inviteCode.toUpperCase(Locale.ROOT);
+        Code code = codeRepository.findByCodeIgnoreCase(normalizedInviteCode)
             .orElseThrow(() -> new SignUpException(SignUpValidation.INVITE_CODE_INVALID.getMessage()));
         
         if (code.isUsed()) {
@@ -80,7 +82,7 @@ public class SignUpService {
             throw new SignUpException(SignUpValidation.INVITE_CODE_EXPIRED.getMessage());
         }
         
-        if (!code.getEmail().equals(email)) {
+        if (!isAdminInvite(code) || !code.getEmail().equalsIgnoreCase(email)) {
             throw new SignUpException(SignUpValidation.INVITE_CODE_INVALID.getMessage());
         }
         
@@ -103,5 +105,10 @@ public class SignUpService {
         Token savedToken = tokenService.saveToken(token, savedUser);
         
         return new UserResponse(savedUser.getEmail(), savedToken.getValue());
+    }
+
+    private boolean isAdminInvite(Code code) {
+        return code != null && code.getCategory() != null
+                && code.getCategory().trim().equalsIgnoreCase("Admin");
     }
 }

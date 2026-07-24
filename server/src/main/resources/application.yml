@@ -20,7 +20,7 @@ spring:
     expiration: ${JWT_EXPIRATION:2592000000}
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
-    enabled: true
+    enabled: false
   docker:
     compose:
       enabled: false

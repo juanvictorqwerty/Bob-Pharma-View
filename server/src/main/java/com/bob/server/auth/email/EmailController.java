@@ -23,4 +23,13 @@ public class EmailController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    
+    @PostMapping("/api/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequestDTO resetPasswordRequest) {
+        try {
+            return new ResponseEntity<>(inviteService.createResetPasswordCode(resetPasswordRequest.getEmail()), HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }
