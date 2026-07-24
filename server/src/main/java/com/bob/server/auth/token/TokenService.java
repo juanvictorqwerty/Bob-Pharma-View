@@ -41,7 +41,7 @@ public class TokenService {
 
     public void revokeAllUserTokens(Users user) {
         List<Token> validUserTokens = tokenRepository.findByUserIdAndIsRevokedFalseAndExpiresAtAfter(
-                user.getID(), Instant.now());
+                user, Instant.now());
         
         if (!validUserTokens.isEmpty()) {
             validUserTokens.forEach(token -> token.setRevoked(true));
@@ -103,6 +103,6 @@ public class TokenService {
     public boolean canRenewToday(Users user) {
         Instant todayStart = Instant.now().truncatedTo(ChronoUnit.DAYS);
         return !tokenRepository.existsByUserIdAndIsRevokedFalseAndLastRenewedAtAfter(
-                user.getID(), todayStart);
+                user, todayStart);
     }
 }

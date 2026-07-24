@@ -15,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.bob.server.model.Code;
-import com.bob.server.model.Users;
 import com.bob.server.repositories.CodeRepository;
 import com.bob.server.repositories.UsersRepository;
 
@@ -43,9 +42,6 @@ public class EmailService {
             throw new SecurityException("You must be logged in to create invites");
         }
         
-        // Get the current user's details
-        Users currentUser = (Users) authentication.getPrincipal();
-        
         // Check if user has Admin role
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_Admin"));
@@ -55,6 +51,11 @@ public class EmailService {
         }
         
         String email = inviteDTO.getEmail();
+        String category = inviteDTO.getCategory();
+        
+        if (category == null || !category.trim().equalsIgnoreCase("Admin")) {
+            throw new IllegalArgumentException("Category must be Admin");
+        }
         
         if (usersRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("Email is already registered as a user");
@@ -63,7 +64,7 @@ public class EmailService {
         String inviteCode = generateInviteCode();
         
         Code code = new Code();
-        code.setCategory(inviteDTO.getCategory());
+        code.setCategory("Admin");
         code.setEmail(email);
         code.setCode(inviteCode);
         code.setUsed(false);
