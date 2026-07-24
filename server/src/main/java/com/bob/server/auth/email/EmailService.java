@@ -86,7 +86,7 @@ public class EmailService {
         }
         
         // Invalidate any existing unused reset codes for this email
-        codeRepository.findByEmailAndCategoryAndUsedFalse(email, "RESET_PASSWORD")
+        codeRepository.findByEmailAndCategoryAndUsedFalse(email, "reset_password")
             .ifPresent(code -> {
                 code.setUsed(true);
                 codeRepository.save(code);
@@ -95,7 +95,7 @@ public class EmailService {
         String resetCode = generateResetCode();
         
         Code code = new Code();
-        code.setCategory("RESET_PASSWORD");
+        code.setCategory("reset_password");
         code.setEmail(email);
         code.setCode(resetCode);
         code.setUsed(false);

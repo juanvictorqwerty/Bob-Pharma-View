@@ -39,6 +39,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/login").permitAll()
                 .requestMatchers("/api/Signup-admin").permitAll()
                 .requestMatchers("/api/Signup-users").permitAll()
+                // Allow public access to reset password endpoints
+                .requestMatchers("/api/reset-password").permitAll()
+                .requestMatchers("/api/reset-password/confirm").permitAll()
                 // Allow Swagger UI and API docs
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
