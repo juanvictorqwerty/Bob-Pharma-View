@@ -9,5 +9,6 @@ import com.bob.server.model.PharmacyStaff;
 public interface PharmacyStaffRepository extends JpaRepository<PharmacyStaff, UUID> {
     List<PharmacyStaff> findByUserId(UUID userId);
     List<PharmacyStaff> findByPharmacyId(UUID pharmacyId);
+    List<PharmacyStaff> findByUserIdAndPharmacyId(UUID userId, UUID pharmacyId);
     boolean existsByUserIdAndPharmacyId(UUID userId, UUID pharmacyId);
 }

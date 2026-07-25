@@ -1,0 +1,101 @@
+package com.bob.server.pharmacy_management.creation;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.bob.server.model.Users;
+
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/api/pharmacies")
+public class PharmacyCreationController {
+
+    private final PharmacyCreationService pharmacyCreationService;
+
+    public PharmacyCreationController(PharmacyCreationService pharmacyCreationService) {
+        this.pharmacyCreationService = pharmacyCreationService;
+    }
+
+    @PostMapping("/Create")
+    public ResponseEntity<PharmacyResponseDTO> createPharmacy(
+            @Valid @RequestBody PharmacyCreationDTO dto,
+            @AuthenticationPrincipal Users currentUser) {
+        PharmacyResponseDTO response = pharmacyCreationService.createPharmacy(dto, currentUser);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{pharmacyId}/Approve")
+    public ResponseEntity<PharmacyResponseDTO> approvePharmacy(
+            @PathVariable UUID pharmacyId) {
+        PharmacyResponseDTO response = pharmacyCreationService.approvePharmacy(pharmacyId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{pharmacyId}/Staff")
+    public ResponseEntity<PharmacyStaffResponseDTO> addStaff(
+            @PathVariable UUID pharmacyId,
+            @Valid @RequestBody PharmacyStaffAssignmentDTO dto,
+            @AuthenticationPrincipal Users currentUser) {
+        PharmacyStaffResponseDTO response = pharmacyCreationService.addStaff(pharmacyId, dto, currentUser);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{pharmacyId}/Staff/{staffId}")
+    public ResponseEntity<Void> removeStaff(
+            @PathVariable UUID pharmacyId,
+            @PathVariable UUID staffId,
+            @AuthenticationPrincipal Users currentUser) {
+        pharmacyCreationService.removeStaff(pharmacyId, staffId, currentUser);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{pharmacyId}/Suspend")
+    public ResponseEntity<PharmacyResponseDTO> suspendPharmacy(
+            @PathVariable UUID pharmacyId) {
+        PharmacyResponseDTO response = pharmacyCreationService.suspendPharmacy(pharmacyId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{pharmacyId}/Unsuspend")
+    public ResponseEntity<PharmacyResponseDTO> unsuspendPharmacy(
+            @PathVariable UUID pharmacyId) {
+        PharmacyResponseDTO response = pharmacyCreationService.unsuspendPharmacy(pharmacyId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{pharmacyId}")
+    public ResponseEntity<PharmacyResponseDTO> getPharmacy(
+            @PathVariable UUID pharmacyId) {
+        PharmacyResponseDTO response = pharmacyCreationService.getPharmacyById(pharmacyId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PharmacyResponseDTO>> getPharmacies(
+            @RequestParam(required = false, defaultValue = "false") boolean onlyApproved,
+            @RequestParam(required = false) String region,
+            @RequestParam(required = false) String city) {
+        List<PharmacyResponseDTO> response = pharmacyCreationService.getPharmacies(onlyApproved, region, city);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{pharmacyId}/Staff")
+    public ResponseEntity<List<PharmacyStaffResponseDTO>> getPharmacyStaff(
+            @PathVariable UUID pharmacyId) {
+        List<PharmacyStaffResponseDTO> response = pharmacyCreationService.getPharmacyStaff(pharmacyId);
+        return ResponseEntity.ok(response);
+    }
+}

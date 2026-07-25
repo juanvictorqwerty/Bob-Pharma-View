@@ -50,6 +50,13 @@ public class SecurityConfig {
                 .requestMatchers("/webjars/**").permitAll()
                 // Protect invite endpoint - only admins can invite
                 .requestMatchers("/api/invite").hasRole("Admin")
+                // Pharmacy management endpoints
+                .requestMatchers("/api/pharmacies/Create").authenticated()
+                .requestMatchers("/api/pharmacies/*/Approve/**").hasRole("Admin")
+                .requestMatchers("/api/pharmacies/*/Suspend/**").hasRole("Admin")
+                .requestMatchers("/api/pharmacies/*/Unsuspend/**").hasRole("Admin")
+                .requestMatchers("/api/pharmacies/**").authenticated()
+                .requestMatchers("/api/pharmacies").authenticated()
                 // All other requests require authentication
                 .anyRequest().authenticated()
             )
