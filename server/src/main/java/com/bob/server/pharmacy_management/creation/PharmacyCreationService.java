@@ -1,6 +1,7 @@
 package com.bob.server.pharmacy_management.creation;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -9,6 +10,9 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -204,6 +208,13 @@ public class PharmacyCreationService {
     }
 
     @Transactional(readOnly = true)
+    public Page<PharmacyResponseDTO> searchPharmacies(String name, String region, String city, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Pharmacy> pharmacyPage = pharmacyRepository.searchPharmacies(name, region, city, pageable);
+        return pharmacyPage.map(this::mapToResponseDTO);
+    }
+
+    @Transactional(readOnly = true)
     public List<PharmacyResponseDTO> getPharmacies(boolean onlyApproved, String region, String city) {
         List<Pharmacy> pharmacies;
 
@@ -232,6 +243,166 @@ public class PharmacyCreationService {
         checkPharmacyUsable(pharmacy);
 
         List<PharmacyStaff> staffList = pharmacyStaffRepository.findByPharmacyId(pharmacyId);
+        return staffList.stream()
+                .map(s -> mapToStaffResponseDTO(s, s.getUserId().getEmail()))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PharmacyStaffResponseDTO> getPharmacyStaffForMembers(UUID pharmacyId, Users currentUser) {
+        Pharmacy pharmacy = pharmacyRepository.findById(pharmacyId)
+                .orElseThrow(() -> new PharmacyCreationException(PharmacyCreationValidation.PHARMACY_NOT_FOUND.getMessage()));
+
+        // Check if user is creator or staff member of this pharmacy
+        boolean isCreator = pharmacy.getCreatorId().getID().equals(currentUser.getID());
+        boolean isStaff = pharmacyStaffRepository.existsByUserIdAndPharmacyId(currentUser.getID(), pharmacyId);
+
+        if (!isCreator && !isStaff) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.UNAUTHORIZED_ACTION.getMessage());
+        }
+
+        List<PharmacyStaff> staffList = pharmacyStaffRepository.findByPharmacyId(pharmacyId);
+        return staffList.stream()
+                .map(s -> mapToStaffResponseDTO(s, s.getUserId().getEmail()))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PharmacyResponseDTO> getMyPharmacies(Users currentUser) {
+        List<Pharmacy> pharmacies = new ArrayList<>();
+
+        // Find pharmacies where user is the creator
+        List<Pharmacy> allPharmacies = pharmacyRepository.findAll();
+        for (Pharmacy pharmacy : allPharmacies) {
+            if (pharmacy.getCreatorId().getID().equals(currentUser.getID())) {
+                pharmacies.add(pharmacy);
+            }
+        }
+
+        // Find pharmacies where user is a staff member
+        List<PharmacyStaff> staffRecords = pharmacyStaffRepository.findByUserId(currentUser.getID());
+        for (PharmacyStaff staff : staffRecords) {
+            Pharmacy pharmacy = staff.getPharmacyId();
+            if (pharmacies.stream().noneMatch(p -> p.getID().equals(pharmacy.getID()))) {
+                pharmacies.add(pharmacy);
+            }
+        }
+
+        return pharmacies.stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public PharmacyResponseDTO updatePharmacy(UUID pharmacyId, PharmacyCreationDTO dto, Users currentUser) {
+        Pharmacy pharmacy = pharmacyRepository.findById(pharmacyId)
+                .orElseThrow(() -> new PharmacyCreationException(PharmacyCreationValidation.PHARMACY_NOT_FOUND.getMessage()));
+
+        // Only creator or PHARMACY_ADMIN can update
+        boolean isCreator = pharmacy.getCreatorId().getID().equals(currentUser.getID());
+        boolean isAdmin = isPharmacyAdmin(currentUser, pharmacy);
+        if (!isCreator && !isAdmin) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.UNAUTHORIZED_ACTION.getMessage());
+        }
+
+        // Check uniqueness if name, region, or city changed
+        boolean nameChanged = !pharmacy.getName().equals(dto.getName());
+        boolean regionChanged = !pharmacy.getRegion().equals(dto.getRegion());
+        boolean cityChanged = !pharmacy.getCity().equals(dto.getCity());
+        if (nameChanged || regionChanged || cityChanged) {
+            if (pharmacyRepository.existsByNameAndRegionAndCity(dto.getName(), dto.getRegion(), dto.getCity())) {
+                throw new PharmacyCreationException(PharmacyCreationValidation.PHARMACY_ALREADY_EXISTS.getMessage());
+            }
+        }
+
+        pharmacy.setName(dto.getName());
+        pharmacy.setRegion(dto.getRegion());
+        pharmacy.setCity(dto.getCity());
+        pharmacy.setLatitude(dto.getLatitude());
+        pharmacy.setLongitude(dto.getLongitude());
+        pharmacy.setUpdatedAt(Instant.now().toString());
+
+        // Update location point
+        try {
+            double lat = Double.parseDouble(dto.getLatitude());
+            double lng = Double.parseDouble(dto.getLongitude());
+            GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+            Point point = geometryFactory.createPoint(new Coordinate(lng, lat));
+            pharmacy.setLocation(point);
+        } catch (NumberFormatException e) {
+            throw new PharmacyCreationException("Invalid latitude or longitude values");
+        }
+
+        Pharmacy saved = pharmacyRepository.save(pharmacy);
+        return mapToResponseDTO(saved);
+    }
+
+    @Transactional
+    public PharmacyStaffResponseDTO suspendStaff(UUID pharmacyId, UUID staffId, Users currentUser) {
+        Pharmacy pharmacy = pharmacyRepository.findById(pharmacyId)
+                .orElseThrow(() -> new PharmacyCreationException(PharmacyCreationValidation.PHARMACY_NOT_FOUND.getMessage()));
+
+        PharmacyStaff staff = pharmacyStaffRepository.findById(staffId)
+                .orElseThrow(() -> new PharmacyCreationException(PharmacyCreationValidation.STAFF_NOT_FOUND.getMessage()));
+
+        if (!staff.getPharmacyId().getID().equals(pharmacyId)) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.STAFF_NOT_FOUND.getMessage());
+        }
+
+        // Cannot suspend the creator
+        if (staff.getUserId().getID().equals(pharmacy.getCreatorId().getID())) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.CANNOT_SUSPEND_CREATOR.getMessage());
+        }
+
+        // Check authorization: creator or PHARMACY_ADMIN
+        boolean isCreator = pharmacy.getCreatorId().getID().equals(currentUser.getID());
+        boolean isAdmin = isPharmacyAdmin(currentUser, pharmacy);
+        if (!isCreator && !isAdmin) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.UNAUTHORIZED_ACTION.getMessage());
+        }
+
+        if (staff.isSuspended()) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.STAFF_ALREADY_SUSPENDED.getMessage());
+        }
+
+        staff.setSuspended(true);
+        staff.setUpdatedAt(Instant.now().toString());
+        PharmacyStaff saved = pharmacyStaffRepository.save(staff);
+        return mapToStaffResponseDTO(saved, saved.getUserId().getEmail());
+    }
+
+    @Transactional
+    public PharmacyStaffResponseDTO unsuspendStaff(UUID pharmacyId, UUID staffId, Users currentUser) {
+        Pharmacy pharmacy = pharmacyRepository.findById(pharmacyId)
+                .orElseThrow(() -> new PharmacyCreationException(PharmacyCreationValidation.PHARMACY_NOT_FOUND.getMessage()));
+
+        PharmacyStaff staff = pharmacyStaffRepository.findById(staffId)
+                .orElseThrow(() -> new PharmacyCreationException(PharmacyCreationValidation.STAFF_NOT_FOUND.getMessage()));
+
+        if (!staff.getPharmacyId().getID().equals(pharmacyId)) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.STAFF_NOT_FOUND.getMessage());
+        }
+
+        // Check authorization: creator or PHARMACY_ADMIN
+        boolean isCreator = pharmacy.getCreatorId().getID().equals(currentUser.getID());
+        boolean isAdmin = isPharmacyAdmin(currentUser, pharmacy);
+        if (!isCreator && !isAdmin) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.UNAUTHORIZED_ACTION.getMessage());
+        }
+
+        if (!staff.isSuspended()) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.STAFF_NOT_SUSPENDED.getMessage());
+        }
+
+        staff.setSuspended(false);
+        staff.setUpdatedAt(Instant.now().toString());
+        PharmacyStaff saved = pharmacyStaffRepository.save(staff);
+        return mapToStaffResponseDTO(saved, saved.getUserId().getEmail());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PharmacyStaffResponseDTO> getStaffByUser(UUID userId) {
+        List<PharmacyStaff> staffList = pharmacyStaffRepository.findByUserId(userId);
         return staffList.stream()
                 .map(s -> mapToStaffResponseDTO(s, s.getUserId().getEmail()))
                 .collect(Collectors.toList());

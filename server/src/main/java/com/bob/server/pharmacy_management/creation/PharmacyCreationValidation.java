@@ -13,7 +13,10 @@ public enum PharmacyCreationValidation {
     STAFF_NOT_FOUND("Staff member not found"),
     INVALID_ROLE("Invalid role. Must be PHARMACY_ADMIN or PHARMACY_PERSONNEL"),
     CANNOT_REMOVE_CREATOR("Cannot remove the pharmacy creator from staff"),
-    PHARMACY_NOT_ACTIVE("Pharmacy is not active");
+    PHARMACY_NOT_ACTIVE("Pharmacy is not active"),
+    STAFF_ALREADY_SUSPENDED("Staff member is already suspended"),
+    STAFF_NOT_SUSPENDED("Staff member is not suspended"),
+    CANNOT_SUSPEND_CREATOR("Cannot suspend the pharmacy creator");
 
     private final String message;
 
