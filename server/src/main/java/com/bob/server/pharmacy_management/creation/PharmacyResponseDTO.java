@@ -17,7 +17,6 @@ public class PharmacyResponseDTO {
     private String longitude;
     private String createdAt;
     private String updatedAt;
-    private UUID creatorId;
     private boolean isApproved;
     private boolean isSuspended;
     private boolean isActive;

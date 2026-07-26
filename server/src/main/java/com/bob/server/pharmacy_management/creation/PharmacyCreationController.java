@@ -46,7 +46,7 @@ public class PharmacyCreationController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{pharmacyId}/Staff")
+    @PostMapping({"/{pharmacyId}/Staff", "/{pharmacyId}/staff"})
     public ResponseEntity<PharmacyStaffResponseDTO> addStaff(
             @PathVariable UUID pharmacyId,
             @Valid @RequestBody PharmacyStaffAssignmentDTO dto,
