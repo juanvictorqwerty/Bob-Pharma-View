@@ -85,6 +85,15 @@ public class PharmacyCreationController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/Nearby")
+    public ResponseEntity<List<PharmacyResponseDTO>> findNearbyPharmacies(
+            @RequestParam double latitude,
+            @RequestParam double longitude,
+            @RequestParam(defaultValue = "5000") double distance) {
+        List<PharmacyResponseDTO> response = pharmacyCreationService.findNearbyPharmacies(latitude, longitude, distance);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/{pharmacyId}/MyStaff")
     public ResponseEntity<List<PharmacyStaffResponseDTO>> getPharmacyStaffForMembers(
             @PathVariable UUID pharmacyId,
@@ -143,6 +152,56 @@ public class PharmacyCreationController {
             @PathVariable UUID userId) {
         List<PharmacyStaffResponseDTO> response = pharmacyCreationService.getStaffByUser(userId);
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{pharmacyId}/Staff/{staffId}/ChangeRole")
+    public ResponseEntity<PharmacyStaffResponseDTO> changeStaffRole(
+            @PathVariable UUID pharmacyId,
+            @PathVariable UUID staffId,
+            @Valid @RequestBody PharmacyStaffRoleChangeDTO dto,
+            @AuthenticationPrincipal Users currentUser) {
+        PharmacyStaffResponseDTO response = pharmacyCreationService.changeStaffRole(pharmacyId, staffId, dto.getNewRole(), currentUser);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{pharmacyId}/TransferOwnership")
+    public ResponseEntity<PharmacyResponseDTO> transferOwnership(
+            @PathVariable UUID pharmacyId,
+            @Valid @RequestBody PharmacyTransferDTO dto,
+            @AuthenticationPrincipal Users currentUser) {
+        PharmacyResponseDTO response = pharmacyCreationService.transferOwnership(pharmacyId, dto.getNewOwnerEmail(), currentUser);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{pharmacyId}/Deactivate")
+    public ResponseEntity<PharmacyResponseDTO> deactivatePharmacy(
+            @PathVariable UUID pharmacyId,
+            @AuthenticationPrincipal Users currentUser) {
+        PharmacyResponseDTO response = pharmacyCreationService.deactivatePharmacy(pharmacyId, currentUser);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{pharmacyId}/Reactivate")
+    public ResponseEntity<PharmacyResponseDTO> reactivatePharmacy(
+            @PathVariable UUID pharmacyId,
+            @AuthenticationPrincipal Users currentUser) {
+        PharmacyResponseDTO response = pharmacyCreationService.reactivatePharmacy(pharmacyId, currentUser);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{pharmacyId}/Staff/Me")
+    public ResponseEntity<Void> removeSelfFromStaff(
+            @PathVariable UUID pharmacyId,
+            @AuthenticationPrincipal Users currentUser) {
+        pharmacyCreationService.removeSelfFromStaff(pharmacyId, currentUser);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{pharmacyId}/Staff/Count")
+    public ResponseEntity<Long> getPharmacyStaffCount(
+            @PathVariable UUID pharmacyId) {
+        long count = pharmacyCreationService.getPharmacyStaffCount(pharmacyId);
+        return ResponseEntity.ok(count);
     }
 
     @GetMapping("/{pharmacyId}/Staff")

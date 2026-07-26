@@ -16,7 +16,12 @@ public enum PharmacyCreationValidation {
     PHARMACY_NOT_ACTIVE("Pharmacy is not active"),
     STAFF_ALREADY_SUSPENDED("Staff member is already suspended"),
     STAFF_NOT_SUSPENDED("Staff member is not suspended"),
-    CANNOT_SUSPEND_CREATOR("Cannot suspend the pharmacy creator");
+    CANNOT_SUSPEND_CREATOR("Cannot suspend the pharmacy creator"),
+    CANNOT_CHANGE_CREATOR_ROLE("Cannot change the pharmacy creator's role"),
+    CANNOT_TRANSFER_TO_SELF("Cannot transfer ownership to yourself"),
+    CANNOT_REMOVE_SELF_AS_CREATOR("Creator cannot remove themselves. Transfer ownership first"),
+    PHARMACY_ALREADY_ACTIVE("Pharmacy is already active"),
+    PHARMACY_ALREADY_INACTIVE("Pharmacy is already inactive");
 
     private final String message;
 

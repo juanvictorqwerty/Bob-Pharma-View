@@ -408,6 +408,147 @@ public class PharmacyCreationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public PharmacyStaffResponseDTO changeStaffRole(UUID pharmacyId, UUID staffId, String newRole, Users currentUser) {
+        Pharmacy pharmacy = pharmacyRepository.findById(pharmacyId)
+                .orElseThrow(() -> new PharmacyCreationException(PharmacyCreationValidation.PHARMACY_NOT_FOUND.getMessage()));
+
+        PharmacyStaff staff = pharmacyStaffRepository.findById(staffId)
+                .orElseThrow(() -> new PharmacyCreationException(PharmacyCreationValidation.STAFF_NOT_FOUND.getMessage()));
+
+        if (!staff.getPharmacyId().getID().equals(pharmacyId)) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.STAFF_NOT_FOUND.getMessage());
+        }
+
+        // Cannot change creator's role
+        if (staff.getUserId().getID().equals(pharmacy.getCreatorId().getID())) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.CANNOT_CHANGE_CREATOR_ROLE.getMessage());
+        }
+
+        // Validate new role
+        String role = newRole.toUpperCase();
+        if (!role.equals("PHARMACY_ADMIN") && !role.equals("PHARMACY_PERSONNEL")) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.INVALID_ROLE.getMessage());
+        }
+
+        // Check authorization: creator or PHARMACY_ADMIN
+        boolean isCreator = pharmacy.getCreatorId().getID().equals(currentUser.getID());
+        boolean isAdmin = isPharmacyAdmin(currentUser, pharmacy);
+        if (!isCreator && !isAdmin) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.UNAUTHORIZED_ACTION.getMessage());
+        }
+
+        staff.setRole(role);
+        staff.setUpdatedAt(Instant.now().toString());
+        PharmacyStaff saved = pharmacyStaffRepository.save(staff);
+        return mapToStaffResponseDTO(saved, saved.getUserId().getEmail());
+    }
+
+    @Transactional
+    public PharmacyResponseDTO transferOwnership(UUID pharmacyId, String newOwnerEmail, Users currentUser) {
+        Pharmacy pharmacy = pharmacyRepository.findById(pharmacyId)
+                .orElseThrow(() -> new PharmacyCreationException(PharmacyCreationValidation.PHARMACY_NOT_FOUND.getMessage()));
+
+        // Only current creator can transfer
+        if (!pharmacy.getCreatorId().getID().equals(currentUser.getID())) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.UNAUTHORIZED_ACTION.getMessage());
+        }
+
+        // Cannot transfer to self
+        if (currentUser.getEmail().equalsIgnoreCase(newOwnerEmail)) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.CANNOT_TRANSFER_TO_SELF.getMessage());
+        }
+
+        // Find new owner
+        Users newOwner = usersRepository.findByEmail(newOwnerEmail);
+        if (newOwner == null) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.USER_NOT_FOUND.getMessage());
+        }
+
+        pharmacy.setCreatorId(newOwner);
+        pharmacy.setUpdatedAt(Instant.now().toString());
+        Pharmacy saved = pharmacyRepository.save(pharmacy);
+        return mapToResponseDTO(saved);
+    }
+
+    @Transactional
+    public PharmacyResponseDTO deactivatePharmacy(UUID pharmacyId, Users currentUser) {
+        Pharmacy pharmacy = pharmacyRepository.findById(pharmacyId)
+                .orElseThrow(() -> new PharmacyCreationException(PharmacyCreationValidation.PHARMACY_NOT_FOUND.getMessage()));
+
+        // Only creator or PHARMACY_ADMIN can deactivate
+        boolean isCreator = pharmacy.getCreatorId().getID().equals(currentUser.getID());
+        boolean isAdmin = isPharmacyAdmin(currentUser, pharmacy);
+        if (!isCreator && !isAdmin) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.UNAUTHORIZED_ACTION.getMessage());
+        }
+
+        if (!pharmacy.isActive()) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.PHARMACY_ALREADY_INACTIVE.getMessage());
+        }
+
+        pharmacy.setActive(false);
+        pharmacy.setUpdatedAt(Instant.now().toString());
+        Pharmacy saved = pharmacyRepository.save(pharmacy);
+        return mapToResponseDTO(saved);
+    }
+
+    @Transactional
+    public PharmacyResponseDTO reactivatePharmacy(UUID pharmacyId, Users currentUser) {
+        Pharmacy pharmacy = pharmacyRepository.findById(pharmacyId)
+                .orElseThrow(() -> new PharmacyCreationException(PharmacyCreationValidation.PHARMACY_NOT_FOUND.getMessage()));
+
+        // Only creator or PHARMACY_ADMIN can reactivate
+        boolean isCreator = pharmacy.getCreatorId().getID().equals(currentUser.getID());
+        boolean isAdmin = isPharmacyAdmin(currentUser, pharmacy);
+        if (!isCreator && !isAdmin) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.UNAUTHORIZED_ACTION.getMessage());
+        }
+
+        if (pharmacy.isActive()) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.PHARMACY_ALREADY_ACTIVE.getMessage());
+        }
+
+        pharmacy.setActive(true);
+        pharmacy.setUpdatedAt(Instant.now().toString());
+        Pharmacy saved = pharmacyRepository.save(pharmacy);
+        return mapToResponseDTO(saved);
+    }
+
+    @Transactional
+    public void removeSelfFromStaff(UUID pharmacyId, Users currentUser) {
+        Pharmacy pharmacy = pharmacyRepository.findById(pharmacyId)
+                .orElseThrow(() -> new PharmacyCreationException(PharmacyCreationValidation.PHARMACY_NOT_FOUND.getMessage()));
+
+        // Creator cannot remove themselves
+        if (pharmacy.getCreatorId().getID().equals(currentUser.getID())) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.CANNOT_REMOVE_SELF_AS_CREATOR.getMessage());
+        }
+
+        List<PharmacyStaff> staffRecords = pharmacyStaffRepository.findByUserIdAndPharmacyId(currentUser.getID(), pharmacyId);
+        if (staffRecords.isEmpty()) {
+            throw new PharmacyCreationException(PharmacyCreationValidation.STAFF_NOT_FOUND.getMessage());
+        }
+
+        pharmacyStaffRepository.deleteAll(staffRecords);
+    }
+
+    @Transactional(readOnly = true)
+    public long getPharmacyStaffCount(UUID pharmacyId) {
+        Pharmacy pharmacy = pharmacyRepository.findById(pharmacyId)
+                .orElseThrow(() -> new PharmacyCreationException(PharmacyCreationValidation.PHARMACY_NOT_FOUND.getMessage()));
+
+        return pharmacyStaffRepository.findByPharmacyId(pharmacyId).size();
+    }
+
+    @Transactional(readOnly = true)
+    public List<PharmacyResponseDTO> findNearbyPharmacies(double latitude, double longitude, double distanceInMeters) {
+        List<Pharmacy> pharmacies = pharmacyRepository.findNearbyPharmacies(latitude, longitude, distanceInMeters);
+        return pharmacies.stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
     // --- Helper methods ---
 
     private void checkPharmacyUsable(Pharmacy pharmacy) {
