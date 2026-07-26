@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import com.bob.server.auth.email.EmailException;
+import com.bob.server.pharmacy_management.creation.PharmacyCreationException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,6 +21,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
     
+    @ExceptionHandler(PharmacyCreationException.class)
+    public ResponseEntity<ErrorResponse> handlePharmacyCreationException(PharmacyCreationException ex, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            ex.getMessage()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(EmailException.class)
     public ResponseEntity<ErrorResponse> handleEmailException(EmailException ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
