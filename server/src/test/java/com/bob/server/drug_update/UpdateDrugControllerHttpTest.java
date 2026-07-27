@@ -9,12 +9,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,6 +29,7 @@ import com.bob.server.repositories.UsersRepository;
 
 @WebMvcTest(UpdateDrugController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@WithMockUser(username = "staff@example.com")
 class UpdateDrugControllerHttpTest {
 
     @Autowired
@@ -58,7 +61,6 @@ class UpdateDrugControllerHttpTest {
     }
 
     @Test
-    @WithMockUser(username = "staff@example.com")
     void updateDrugsWithValidFileShouldReturn200() throws Exception {
         Users user = createUser();
         when(usersRepository.findByEmail(userEmail)).thenReturn(user);
@@ -80,7 +82,6 @@ class UpdateDrugControllerHttpTest {
     }
 
     @Test
-    @WithMockUser(username = "staff@example.com")
     void updateDrugsWhenUserNotStaffShouldReturn403() throws Exception {
         Users user = createUser();
         when(usersRepository.findByEmail(userEmail)).thenReturn(user);
@@ -101,6 +102,7 @@ class UpdateDrugControllerHttpTest {
 
     @Test
     void updateDrugsWithoutAuthShouldReturn401() throws Exception {
+        SecurityContextHolder.clearContext();
         MockMultipartFile file = new MockMultipartFile(
                 "file",
                 "drugs.xlsx",
@@ -115,7 +117,6 @@ class UpdateDrugControllerHttpTest {
     }
 
     @Test
-    @WithMockUser(username = "staff@example.com")
     void updateDrugsWithServiceExceptionShouldReturn400() throws Exception {
         Users user = createUser();
         when(usersRepository.findByEmail(userEmail)).thenReturn(user);
@@ -138,7 +139,6 @@ class UpdateDrugControllerHttpTest {
     }
 
     @Test
-    @WithMockUser(username = "nonexistent@example.com")
     void updateDrugsWhenUserNotFoundShouldReturn403() throws Exception {
         when(usersRepository.findByEmail("nonexistent@example.com")).thenReturn(null);
 
@@ -156,8 +156,11 @@ class UpdateDrugControllerHttpTest {
     }
 
     @Test
-    @WithMockUser(username = "staff@example.com")
     void updateDrugsWithMissingPharmacyIdShouldReturn400() throws Exception {
+        Users user = createUser();
+        when(usersRepository.findByEmail(userEmail)).thenReturn(user);
+        when(pharmacyStaffRepository.existsByUserIdAndPharmacyId(user.getID(), pharmacyId)).thenReturn(true);
+
         MockMultipartFile file = new MockMultipartFile(
                 "file",
                 "drugs.xlsx",

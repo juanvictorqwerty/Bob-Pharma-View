@@ -9,7 +9,8 @@ public enum UpdateDrugValidation {
     PARSE_ERROR("Failed to parse the Excel file"),
     BATCH_FAILED("Batch update failed due to a row error"),
     PHARMACY_NOT_FOUND("Pharmacy not found"),
-    ACCESS_DENIED("You do not have access to this pharmacy");
+    ACCESS_DENIED("You do not have access to this pharmacy"),
+    INVALID_QUANTITY("Quantity must be a positive number");
 
     private final String message;
 

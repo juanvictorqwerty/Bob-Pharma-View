@@ -266,6 +266,165 @@ class UpdateDrugServiceTest {
     }
 
     @Test
+    void updateDrugsFromExcelShouldCollapseMultipleSpacesInDrugName() throws Exception {
+        MultipartFile file = mock(MultipartFile.class);
+        when(file.isEmpty()).thenReturn(false);
+        when(file.getOriginalFilename()).thenReturn("drugs.xlsx");
+
+        Row headerRow = mock(Row.class);
+        Cell nameHeader = mock(Cell.class);
+        Cell qtyHeader = mock(Cell.class);
+        when(nameHeader.getStringCellValue()).thenReturn("name");
+        when(qtyHeader.getStringCellValue()).thenReturn("quantity");
+        when(headerRow.getLastCellNum()).thenReturn((short) 2);
+        when(headerRow.getCell(0)).thenReturn(nameHeader);
+        when(headerRow.getCell(1)).thenReturn(qtyHeader);
+
+        Row dataRow = mock(Row.class);
+        Cell nameCell = mock(Cell.class);
+        Cell qtyCell = mock(Cell.class);
+        when(nameCell.getCellType()).thenReturn(CellType.STRING);
+        when(nameCell.getStringCellValue()).thenReturn("Paracetamol   Extra   Strength");
+        when(qtyCell.getCellType()).thenReturn(CellType.NUMERIC);
+        when(qtyCell.getNumericCellValue()).thenReturn(50.0);
+        when(dataRow.getCell(0)).thenReturn(nameCell);
+        when(dataRow.getCell(1)).thenReturn(qtyCell);
+
+        Sheet sheet = mock(Sheet.class);
+        when(sheet.iterator()).thenReturn(
+                java.util.List.of(headerRow, dataRow).iterator()
+        );
+
+        Workbook workbook = mock(Workbook.class);
+        when(workbook.getSheetAt(0)).thenReturn(sheet);
+
+        when(file.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
+
+        when(pharmacyRepository.findById(pharmacyId)).thenReturn(Optional.of(pharmacy));
+
+        String normalizedName = "Paracetamol Extra Strength";
+        Drug collapsedDrug = new Drug();
+        collapsedDrug.setID(UUID.randomUUID());
+        collapsedDrug.setName(normalizedName);
+        collapsedDrug.setAllowed(true);
+        when(drugRepository.findByName(normalizedName)).thenReturn(Optional.of(collapsedDrug));
+
+        Stock existingStock = new Stock();
+        existingStock.setPharmacyId(pharmacy);
+        existingStock.setDrugId(collapsedDrug);
+        existingStock.setQuantity(10);
+        when(stockRepository.findByPharmacyIdAndDrugId(pharmacy.getID(), collapsedDrug.getID()))
+                .thenReturn(Optional.of(existingStock));
+        when(stockRepository.save(any(Stock.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        try (MockedStatic<WorkbookFactory> wf = Mockito.mockStatic(WorkbookFactory.class)) {
+            wf.when(() -> WorkbookFactory.create(any(InputStream.class))).thenReturn(workbook);
+
+            int result = updateDrugService.updateDrugsFromExcel(file, pharmacyId);
+
+            assertEquals(1, result);
+            assertEquals(50, existingStock.getQuantity());
+            verify(drugRepository).findByName(normalizedName);
+        }
+    }
+
+    @Test
+    void updateDrugsFromExcelWithZeroQuantityShouldThrowException() throws Exception {
+        MultipartFile file = mock(MultipartFile.class);
+        when(file.isEmpty()).thenReturn(false);
+        when(file.getOriginalFilename()).thenReturn("drugs.xlsx");
+
+        Row headerRow = mock(Row.class);
+        Cell nameHeader = mock(Cell.class);
+        Cell qtyHeader = mock(Cell.class);
+        when(nameHeader.getStringCellValue()).thenReturn("name");
+        when(qtyHeader.getStringCellValue()).thenReturn("quantity");
+        when(headerRow.getLastCellNum()).thenReturn((short) 2);
+        when(headerRow.getCell(0)).thenReturn(nameHeader);
+        when(headerRow.getCell(1)).thenReturn(qtyHeader);
+
+        Row dataRow = mock(Row.class);
+        Cell nameCell = mock(Cell.class);
+        Cell qtyCell = mock(Cell.class);
+        when(nameCell.getCellType()).thenReturn(CellType.STRING);
+        when(nameCell.getStringCellValue()).thenReturn("Paracetamol");
+        when(qtyCell.getCellType()).thenReturn(CellType.NUMERIC);
+        when(qtyCell.getNumericCellValue()).thenReturn(0.0);
+        when(dataRow.getCell(0)).thenReturn(nameCell);
+        when(dataRow.getCell(1)).thenReturn(qtyCell);
+
+        Sheet sheet = mock(Sheet.class);
+        when(sheet.iterator()).thenReturn(
+                java.util.List.of(headerRow, dataRow).iterator()
+        );
+
+        Workbook workbook = mock(Workbook.class);
+        when(workbook.getSheetAt(0)).thenReturn(sheet);
+
+        when(file.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
+        when(pharmacyRepository.findById(pharmacyId)).thenReturn(Optional.of(pharmacy));
+
+        try (MockedStatic<WorkbookFactory> wf = Mockito.mockStatic(WorkbookFactory.class)) {
+            wf.when(() -> WorkbookFactory.create(any(InputStream.class))).thenReturn(workbook);
+
+            UpdateDrugException exception = assertThrows(
+                    UpdateDrugException.class,
+                    () -> updateDrugService.updateDrugsFromExcel(file, pharmacyId)
+            );
+
+            assertEquals(UpdateDrugValidation.INVALID_QUANTITY.getMessage(), exception.getMessage());
+        }
+    }
+
+    @Test
+    void updateDrugsFromExcelWithNegativeQuantityShouldThrowException() throws Exception {
+        MultipartFile file = mock(MultipartFile.class);
+        when(file.isEmpty()).thenReturn(false);
+        when(file.getOriginalFilename()).thenReturn("drugs.xlsx");
+
+        Row headerRow = mock(Row.class);
+        Cell nameHeader = mock(Cell.class);
+        Cell qtyHeader = mock(Cell.class);
+        when(nameHeader.getStringCellValue()).thenReturn("name");
+        when(qtyHeader.getStringCellValue()).thenReturn("quantity");
+        when(headerRow.getLastCellNum()).thenReturn((short) 2);
+        when(headerRow.getCell(0)).thenReturn(nameHeader);
+        when(headerRow.getCell(1)).thenReturn(qtyHeader);
+
+        Row dataRow = mock(Row.class);
+        Cell nameCell = mock(Cell.class);
+        Cell qtyCell = mock(Cell.class);
+        when(nameCell.getCellType()).thenReturn(CellType.STRING);
+        when(nameCell.getStringCellValue()).thenReturn("Paracetamol");
+        when(qtyCell.getCellType()).thenReturn(CellType.NUMERIC);
+        when(qtyCell.getNumericCellValue()).thenReturn(-5.0);
+        when(dataRow.getCell(0)).thenReturn(nameCell);
+        when(dataRow.getCell(1)).thenReturn(qtyCell);
+
+        Sheet sheet = mock(Sheet.class);
+        when(sheet.iterator()).thenReturn(
+                java.util.List.of(headerRow, dataRow).iterator()
+        );
+
+        Workbook workbook = mock(Workbook.class);
+        when(workbook.getSheetAt(0)).thenReturn(sheet);
+
+        when(file.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
+        when(pharmacyRepository.findById(pharmacyId)).thenReturn(Optional.of(pharmacy));
+
+        try (MockedStatic<WorkbookFactory> wf = Mockito.mockStatic(WorkbookFactory.class)) {
+            wf.when(() -> WorkbookFactory.create(any(InputStream.class))).thenReturn(workbook);
+
+            UpdateDrugException exception = assertThrows(
+                    UpdateDrugException.class,
+                    () -> updateDrugService.updateDrugsFromExcel(file, pharmacyId)
+            );
+
+            assertEquals(UpdateDrugValidation.INVALID_QUANTITY.getMessage(), exception.getMessage());
+        }
+    }
+
+    @Test
     void updateDrugsFromExcelWhenPharmacyNotFoundShouldThrowException() {
         MultipartFile file = mock(MultipartFile.class);
         when(file.isEmpty()).thenReturn(false);

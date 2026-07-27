@@ -32,8 +32,8 @@ public class UpdateDrugService {
     private final StockRepository stockRepository;
 
     public UpdateDrugService(DrugRepository drugRepository,
-                             PharmacyRepository pharmacyRepository,
-                             StockRepository stockRepository) {
+                                PharmacyRepository pharmacyRepository,
+                                StockRepository stockRepository) {
         this.drugRepository = drugRepository;
         this.pharmacyRepository = pharmacyRepository;
         this.stockRepository = stockRepository;
@@ -56,7 +56,7 @@ public class UpdateDrugService {
         int rowsProcessed;
 
         try (InputStream is = file.getInputStream();
-             Workbook workbook = WorkbookFactory.create(is)) {
+                Workbook workbook = WorkbookFactory.create(is)) {
 
             Sheet sheet = workbook.getSheetAt(0);
             Iterator<Row> rowIterator = sheet.iterator();
@@ -88,13 +88,16 @@ public class UpdateDrugService {
 
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
-                String drugName = getStringCellValue(row.getCell(nameColIdx));
-                if (drugName == null || drugName.isBlank()) {
+                String rawDrugName = getStringCellValue(row.getCell(nameColIdx));
+                if (rawDrugName == null || rawDrugName.isBlank()) {
                     continue;
                 }
-                drugName = drugName.trim();
+                String drugName = rawDrugName.trim().replaceAll("\\s+", " ");
 
                 int quantity = getNumericCellValue(row.getCell(quantityColIdx));
+                if (quantity <= 0) {
+                    throw new UpdateDrugException(UpdateDrugValidation.INVALID_QUANTITY);
+                }
 
                 Drug drug = drugRepository.findByName(drugName)
                         .orElseGet(() -> {

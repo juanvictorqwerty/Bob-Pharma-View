@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,8 +34,8 @@ public class UpdateDrugController {
 
     @PostMapping("/update")
     public ResponseEntity<?> updateDrugs(@RequestParam("file") MultipartFile file,
-                                            @RequestParam("pharmacyId") UUID pharmacyId,
-                                            Authentication authentication) {
+                                            @RequestParam("pharmacyId") UUID pharmacyId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
