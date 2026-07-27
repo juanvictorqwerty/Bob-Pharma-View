@@ -10,7 +10,6 @@ import lombok.Setter;
 public class PharmacyStaffResponseDTO {
 
     private UUID id;
-    private UUID userId;
     private String userEmail;
     private UUID pharmacyId;
     private String role;

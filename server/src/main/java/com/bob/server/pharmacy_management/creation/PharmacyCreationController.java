@@ -6,7 +6,8 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,55 +33,91 @@ public class PharmacyCreationController {
     }
 
     @PostMapping("/Create")
-    public ResponseEntity<PharmacyResponseDTO> createPharmacy(
-            @Valid @RequestBody PharmacyCreationDTO dto,
-            @AuthenticationPrincipal Users currentUser) {
-        PharmacyResponseDTO response = pharmacyCreationService.createPharmacy(dto, currentUser);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    public ResponseEntity<?> createPharmacy(
+            @Valid @RequestBody PharmacyCreationDTO dto) {
+        Users currentUser = resolveCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            PharmacyResponseDTO response = pharmacyCreationService.createPharmacy(dto, currentUser);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/{pharmacyId}/Approve")
-    public ResponseEntity<PharmacyResponseDTO> approvePharmacy(
+    public ResponseEntity<?> approvePharmacy(
             @PathVariable UUID pharmacyId) {
-        PharmacyResponseDTO response = pharmacyCreationService.approvePharmacy(pharmacyId);
-        return ResponseEntity.ok(response);
+        try {
+            PharmacyResponseDTO response = pharmacyCreationService.approvePharmacy(pharmacyId);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @PostMapping("/{pharmacyId}/Staff")
-    public ResponseEntity<PharmacyStaffResponseDTO> addStaff(
+    @PostMapping({"/{pharmacyId}/Staff", "/{pharmacyId}/staff"})
+    public ResponseEntity<?> addStaff(
             @PathVariable UUID pharmacyId,
-            @Valid @RequestBody PharmacyStaffAssignmentDTO dto,
-            @AuthenticationPrincipal Users currentUser) {
-        PharmacyStaffResponseDTO response = pharmacyCreationService.addStaff(pharmacyId, dto, currentUser);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+            @Valid @RequestBody PharmacyStaffAssignmentDTO dto) {
+        Users currentUser = resolveCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            PharmacyStaffResponseDTO response = pharmacyCreationService.addStaff(pharmacyId, dto, currentUser);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping("/{pharmacyId}/Staff/{staffId}")
-    public ResponseEntity<Void> removeStaff(
+    public ResponseEntity<?> removeStaff(
             @PathVariable UUID pharmacyId,
-            @PathVariable UUID staffId,
-            @AuthenticationPrincipal Users currentUser) {
-        pharmacyCreationService.removeStaff(pharmacyId, staffId, currentUser);
-        return ResponseEntity.noContent().build();
+            @PathVariable UUID staffId) {
+        Users currentUser = resolveCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            pharmacyCreationService.removeStaff(pharmacyId, staffId, currentUser);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/{pharmacyId}/Suspend")
-    public ResponseEntity<PharmacyResponseDTO> suspendPharmacy(
+    public ResponseEntity<?> suspendPharmacy(
             @PathVariable UUID pharmacyId) {
-        PharmacyResponseDTO response = pharmacyCreationService.suspendPharmacy(pharmacyId);
-        return ResponseEntity.ok(response);
+        try {
+            PharmacyResponseDTO response = pharmacyCreationService.suspendPharmacy(pharmacyId);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/{pharmacyId}/Unsuspend")
-    public ResponseEntity<PharmacyResponseDTO> unsuspendPharmacy(
+    public ResponseEntity<?> unsuspendPharmacy(
             @PathVariable UUID pharmacyId) {
-        PharmacyResponseDTO response = pharmacyCreationService.unsuspendPharmacy(pharmacyId);
-        return ResponseEntity.ok(response);
+        try {
+            PharmacyResponseDTO response = pharmacyCreationService.unsuspendPharmacy(pharmacyId);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/MyPharmacies")
-    public ResponseEntity<List<PharmacyResponseDTO>> getMyPharmacies(
-            @AuthenticationPrincipal Users currentUser) {
+    public ResponseEntity<List<PharmacyResponseDTO>> getMyPharmacies() {
+        Users currentUser = resolveCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         List<PharmacyResponseDTO> response = pharmacyCreationService.getMyPharmacies(currentUser);
         return ResponseEntity.ok(response);
     }
@@ -95,18 +132,29 @@ public class PharmacyCreationController {
     }
 
     @GetMapping("/{pharmacyId}/MyStaff")
-    public ResponseEntity<List<PharmacyStaffResponseDTO>> getPharmacyStaffForMembers(
-            @PathVariable UUID pharmacyId,
-            @AuthenticationPrincipal Users currentUser) {
-        List<PharmacyStaffResponseDTO> response = pharmacyCreationService.getPharmacyStaffForMembers(pharmacyId, currentUser);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> getPharmacyStaffForMembers(
+            @PathVariable UUID pharmacyId) {
+        Users currentUser = resolveCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            List<PharmacyStaffResponseDTO> response = pharmacyCreationService.getPharmacyStaffForMembers(pharmacyId, currentUser);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/{pharmacyId}")
-    public ResponseEntity<PharmacyResponseDTO> getPharmacy(
+    public ResponseEntity<?> getPharmacy(
             @PathVariable UUID pharmacyId) {
-        PharmacyResponseDTO response = pharmacyCreationService.getPharmacyById(pharmacyId);
-        return ResponseEntity.ok(response);
+        try {
+            PharmacyResponseDTO response = pharmacyCreationService.getPharmacyById(pharmacyId);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping
@@ -121,30 +169,51 @@ public class PharmacyCreationController {
     }
 
     @PutMapping("/{pharmacyId}/Update")
-    public ResponseEntity<PharmacyResponseDTO> updatePharmacy(
+    public ResponseEntity<?> updatePharmacy(
             @PathVariable UUID pharmacyId,
-            @Valid @RequestBody PharmacyCreationDTO dto,
-            @AuthenticationPrincipal Users currentUser) {
-        PharmacyResponseDTO response = pharmacyCreationService.updatePharmacy(pharmacyId, dto, currentUser);
-        return ResponseEntity.ok(response);
+            @Valid @RequestBody PharmacyCreationDTO dto) {
+        Users currentUser = resolveCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            PharmacyResponseDTO response = pharmacyCreationService.updatePharmacy(pharmacyId, dto, currentUser);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/{pharmacyId}/Staff/{staffId}/Suspend")
-    public ResponseEntity<PharmacyStaffResponseDTO> suspendStaff(
+    public ResponseEntity<?> suspendStaff(
             @PathVariable UUID pharmacyId,
-            @PathVariable UUID staffId,
-            @AuthenticationPrincipal Users currentUser) {
-        PharmacyStaffResponseDTO response = pharmacyCreationService.suspendStaff(pharmacyId, staffId, currentUser);
-        return ResponseEntity.ok(response);
+            @PathVariable UUID staffId) {
+        Users currentUser = resolveCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            PharmacyStaffResponseDTO response = pharmacyCreationService.suspendStaff(pharmacyId, staffId, currentUser);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/{pharmacyId}/Staff/{staffId}/Unsuspend")
-    public ResponseEntity<PharmacyStaffResponseDTO> unsuspendStaff(
+    public ResponseEntity<?> unsuspendStaff(
             @PathVariable UUID pharmacyId,
-            @PathVariable UUID staffId,
-            @AuthenticationPrincipal Users currentUser) {
-        PharmacyStaffResponseDTO response = pharmacyCreationService.unsuspendStaff(pharmacyId, staffId, currentUser);
-        return ResponseEntity.ok(response);
+            @PathVariable UUID staffId) {
+        Users currentUser = resolveCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            PharmacyStaffResponseDTO response = pharmacyCreationService.unsuspendStaff(pharmacyId, staffId, currentUser);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/Staff/ByUser/{userId}")
@@ -155,46 +224,81 @@ public class PharmacyCreationController {
     }
 
     @PutMapping("/{pharmacyId}/Staff/{staffId}/ChangeRole")
-    public ResponseEntity<PharmacyStaffResponseDTO> changeStaffRole(
+    public ResponseEntity<?> changeStaffRole(
             @PathVariable UUID pharmacyId,
             @PathVariable UUID staffId,
-            @Valid @RequestBody PharmacyStaffRoleChangeDTO dto,
-            @AuthenticationPrincipal Users currentUser) {
-        PharmacyStaffResponseDTO response = pharmacyCreationService.changeStaffRole(pharmacyId, staffId, dto.getNewRole(), currentUser);
-        return ResponseEntity.ok(response);
+            @Valid @RequestBody PharmacyStaffRoleChangeDTO dto) {
+        Users currentUser = resolveCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            PharmacyStaffResponseDTO response = pharmacyCreationService.changeStaffRole(pharmacyId, staffId, dto.getNewRole(), currentUser);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/{pharmacyId}/TransferOwnership")
-    public ResponseEntity<PharmacyResponseDTO> transferOwnership(
+    public ResponseEntity<?> transferOwnership(
             @PathVariable UUID pharmacyId,
-            @Valid @RequestBody PharmacyTransferDTO dto,
-            @AuthenticationPrincipal Users currentUser) {
-        PharmacyResponseDTO response = pharmacyCreationService.transferOwnership(pharmacyId, dto.getNewOwnerEmail(), currentUser);
-        return ResponseEntity.ok(response);
+            @Valid @RequestBody PharmacyTransferDTO dto) {
+        Users currentUser = resolveCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            PharmacyResponseDTO response = pharmacyCreationService.transferOwnership(pharmacyId, dto.getNewOwnerEmail(), currentUser);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/{pharmacyId}/Deactivate")
-    public ResponseEntity<PharmacyResponseDTO> deactivatePharmacy(
-            @PathVariable UUID pharmacyId,
-            @AuthenticationPrincipal Users currentUser) {
-        PharmacyResponseDTO response = pharmacyCreationService.deactivatePharmacy(pharmacyId, currentUser);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> deactivatePharmacy(
+            @PathVariable UUID pharmacyId) {
+        Users currentUser = resolveCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            PharmacyResponseDTO response = pharmacyCreationService.deactivatePharmacy(pharmacyId, currentUser);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/{pharmacyId}/Reactivate")
-    public ResponseEntity<PharmacyResponseDTO> reactivatePharmacy(
-            @PathVariable UUID pharmacyId,
-            @AuthenticationPrincipal Users currentUser) {
-        PharmacyResponseDTO response = pharmacyCreationService.reactivatePharmacy(pharmacyId, currentUser);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> reactivatePharmacy(
+            @PathVariable UUID pharmacyId) {
+        Users currentUser = resolveCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            PharmacyResponseDTO response = pharmacyCreationService.reactivatePharmacy(pharmacyId, currentUser);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping("/{pharmacyId}/Staff/Me")
-    public ResponseEntity<Void> removeSelfFromStaff(
-            @PathVariable UUID pharmacyId,
-            @AuthenticationPrincipal Users currentUser) {
-        pharmacyCreationService.removeSelfFromStaff(pharmacyId, currentUser);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> removeSelfFromStaff(
+            @PathVariable UUID pharmacyId) {
+        Users currentUser = resolveCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            pharmacyCreationService.removeSelfFromStaff(pharmacyId, currentUser);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/{pharmacyId}/Staff/Count")
@@ -209,5 +313,21 @@ public class PharmacyCreationController {
             @PathVariable UUID pharmacyId) {
         List<PharmacyStaffResponseDTO> response = pharmacyCreationService.getPharmacyStaff(pharmacyId);
         return ResponseEntity.ok(response);
+    }
+
+    private Users resolveCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof Users users) {
+            return users;
+        }
+
+        Users user = new Users();
+        user.setEmail(authentication.getName());
+        return user;
     }
 }

@@ -578,7 +578,6 @@ public class PharmacyCreationService {
         dto.setLongitude(pharmacy.getLongitude());
         dto.setCreatedAt(pharmacy.getCreatedAt());
         dto.setUpdatedAt(pharmacy.getUpdatedAt());
-        dto.setCreatorId(pharmacy.getCreatorId() != null ? pharmacy.getCreatorId().getID() : null);
         dto.setApproved(pharmacy.isApproved());
         dto.setSuspended(pharmacy.isSuspended());
         dto.setActive(pharmacy.isActive());
@@ -588,7 +587,6 @@ public class PharmacyCreationService {
     private PharmacyStaffResponseDTO mapToStaffResponseDTO(PharmacyStaff staff, String userEmail) {
         PharmacyStaffResponseDTO dto = new PharmacyStaffResponseDTO();
         dto.setId(staff.getID());
-        dto.setUserId(staff.getUserId().getID());
         dto.setUserEmail(userEmail);
         dto.setPharmacyId(staff.getPharmacyId().getID());
         dto.setRole(staff.getRole());

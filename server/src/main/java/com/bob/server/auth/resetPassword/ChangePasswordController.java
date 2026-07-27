@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 @RestController
 public class ChangePasswordController {
     
@@ -16,7 +18,7 @@ public class ChangePasswordController {
     }
     
     @PostMapping("/api/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordDTO changePasswordDTO) {
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordDTO changePasswordDTO) {
         try {
             changePasswordService.changePassword(
                 changePasswordDTO.getCurrentPassword(),

@@ -5,6 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import jakarta.validation.Valid;
 
 @RestController
 public class LoginController {
@@ -16,8 +19,12 @@ public class LoginController {
     }
 
     @PostMapping("api/login")
-    public ResponseEntity<LoginResponse> postMethodName(@RequestBody LoginRequest request) {
-        LoginResponse response = loginService.login(request);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<?> postMethodName(@Valid @RequestBody LoginRequest request) {
+        try {
+            LoginResponse response = loginService.login(request);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 }
