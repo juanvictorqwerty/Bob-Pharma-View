@@ -57,6 +57,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/pharmacies/*/Unsuspend/**").hasRole("Admin")
                 .requestMatchers("/api/pharmacies/**").authenticated()
                 .requestMatchers("/api/pharmacies").authenticated()
+                // Search endpoint - public access
+                .requestMatchers("/api/search/**").permitAll()
                 // All other requests require authentication
                 .anyRequest().authenticated()
             )
