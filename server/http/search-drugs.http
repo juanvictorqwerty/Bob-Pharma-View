@@ -1,0 +1,14 @@
+@baseUrl = http://localhost:8090
+
+### Search drugs nationally
+GET {{baseUrl}}/api/search/drugs?query=paracitamol
+
+### Search drugs near the test pharmacy location
+### Test pharmacy POINT(11.5134 3.8893) -> latitude=3.8893, longitude=11.5134
+GET {{baseUrl}}/api/search/drugs?query=paracetamol&latitude=3.8893&longitude=11.5134
+
+### Search drugs near the test pharmacy location with an explicit radius
+GET {{baseUrl}}/api/search/drugs?query=paracetamol&latitude=3.8893&longitude=11.5134&radiusKm=20
+
+### Search drugs with pagination
+GET {{baseUrl}}/api/search/drugs?query=paracetamol&page=0&size=10

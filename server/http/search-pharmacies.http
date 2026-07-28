@@ -1,0 +1,11 @@
+@baseUrl = http://localhost:8090
+
+### Search pharmacies by text fields
+GET {{baseUrl}}/api/pharmacies?name=test&region=Centre&city=Yaounde&page=0&size=10
+
+### Search pharmacies nearby the test pharmacy location
+### Test pharmacy POINT(11.5134 3.8893) -> latitude=3.8893, longitude=11.5134
+GET {{baseUrl}}/api/pharmacies/Nearby?latitude=3.8893&longitude=11.5134&distance=5000
+
+### Search pharmacies nearby with a wider radius
+GET {{baseUrl}}/api/pharmacies/Nearby?latitude=3.8893&longitude=11.5134&distance=20000

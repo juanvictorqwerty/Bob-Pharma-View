@@ -23,7 +23,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.bob.server.auth.token.JwtService;
 import com.bob.server.auth.token.TokenService;
+import com.bob.server.model.Pharmacy;
 import com.bob.server.model.Users;
+import com.bob.server.repositories.PharmacyRepository;
 import com.bob.server.repositories.PharmacyStaffRepository;
 import com.bob.server.repositories.UsersRepository;
 
@@ -45,6 +47,9 @@ class UpdateDrugControllerHttpTest {
     private PharmacyStaffRepository pharmacyStaffRepository;
 
     @MockitoBean
+    private PharmacyRepository pharmacyRepository;
+
+    @MockitoBean
     private JwtService jwtService;
 
     @MockitoBean
@@ -60,11 +65,19 @@ class UpdateDrugControllerHttpTest {
         return user;
     }
 
+    private Pharmacy createPharmacy(Users creator) {
+        Pharmacy pharmacy = new Pharmacy();
+        pharmacy.setID(pharmacyId);
+        pharmacy.setCreatorId(creator);
+        return pharmacy;
+    }
+
     @Test
     void updateDrugsWithValidFileShouldReturn200() throws Exception {
         Users user = createUser();
+        Pharmacy pharmacy = createPharmacy(user);
         when(usersRepository.findByEmail(userEmail)).thenReturn(user);
-        when(pharmacyStaffRepository.existsByUserIdAndPharmacyId(user.getID(), pharmacyId)).thenReturn(true);
+        when(pharmacyRepository.findById(pharmacyId)).thenReturn(java.util.Optional.of(pharmacy));
         when(updateDrugService.updateDrugsFromExcel(any(), eq(pharmacyId))).thenReturn(5);
 
         MockMultipartFile file = new MockMultipartFile(
@@ -78,14 +91,18 @@ class UpdateDrugControllerHttpTest {
                 .file(file)
                 .param("pharmacyId", pharmacyId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Rows processed: 5"));
+                .andExpect(content().string("Success"));
     }
 
     @Test
     void updateDrugsWhenUserNotStaffShouldReturn403() throws Exception {
         Users user = createUser();
+        Users otherUser = new Users();
+        otherUser.setID(UUID.randomUUID());
+        Pharmacy pharmacy = createPharmacy(otherUser);
         when(usersRepository.findByEmail(userEmail)).thenReturn(user);
-        when(pharmacyStaffRepository.existsByUserIdAndPharmacyId(user.getID(), pharmacyId)).thenReturn(false);
+        when(pharmacyRepository.findById(pharmacyId)).thenReturn(java.util.Optional.of(pharmacy));
+        when(pharmacyStaffRepository.findByUserIdAndPharmacyId(user.getID(), pharmacyId)).thenReturn(java.util.Collections.emptyList());
 
         MockMultipartFile file = new MockMultipartFile(
                 "file",
@@ -119,8 +136,9 @@ class UpdateDrugControllerHttpTest {
     @Test
     void updateDrugsWithServiceExceptionShouldReturn400() throws Exception {
         Users user = createUser();
+        Pharmacy pharmacy = createPharmacy(user);
         when(usersRepository.findByEmail(userEmail)).thenReturn(user);
-        when(pharmacyStaffRepository.existsByUserIdAndPharmacyId(user.getID(), pharmacyId)).thenReturn(true);
+        when(pharmacyRepository.findById(pharmacyId)).thenReturn(java.util.Optional.of(pharmacy));
         when(updateDrugService.updateDrugsFromExcel(any(), eq(pharmacyId)))
                 .thenThrow(new UpdateDrugException(UpdateDrugValidation.FILE_EMPTY));
 
@@ -158,8 +176,9 @@ class UpdateDrugControllerHttpTest {
     @Test
     void updateDrugsWithMissingPharmacyIdShouldReturn400() throws Exception {
         Users user = createUser();
+        Pharmacy pharmacy = createPharmacy(user);
         when(usersRepository.findByEmail(userEmail)).thenReturn(user);
-        when(pharmacyStaffRepository.existsByUserIdAndPharmacyId(user.getID(), pharmacyId)).thenReturn(true);
+        when(pharmacyRepository.findById(pharmacyId)).thenReturn(java.util.Optional.of(pharmacy));
 
         MockMultipartFile file = new MockMultipartFile(
                 "file",

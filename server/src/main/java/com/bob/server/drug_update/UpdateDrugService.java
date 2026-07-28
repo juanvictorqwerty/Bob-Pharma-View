@@ -46,7 +46,7 @@ public class UpdateDrugService {
         }
 
         String filename = file.getOriginalFilename();
-        if (filename == null || !filename.toLowerCase().endsWith(".xlsx")) {
+        if (filename == null || !(filename.toLowerCase().endsWith(".xlsx") || filename.toLowerCase().endsWith(".xls"))) {
             throw new UpdateDrugException(UpdateDrugValidation.INVALID_FORMAT);
         }
 
@@ -68,6 +68,9 @@ public class UpdateDrugService {
             Row headerRow = rowIterator.next();
             int nameColIdx = -1;
             int quantityColIdx = -1;
+            int pharmacyNameColIdx = -1;
+            int cityColIdx = -1;
+            int regionColIdx = -1;
 
             for (int i = 0; i < headerRow.getLastCellNum(); i++) {
                 Cell cell = headerRow.getCell(i);
@@ -77,6 +80,12 @@ public class UpdateDrugService {
                     nameColIdx = i;
                 } else if ("quantity".equals(headerValue)) {
                     quantityColIdx = i;
+                } else if ("pharmacy_name".equals(headerValue) || "pharmacyname".equals(headerValue)) {
+                    pharmacyNameColIdx = i;
+                } else if ("city".equals(headerValue)) {
+                    cityColIdx = i;
+                } else if ("region".equals(headerValue)) {
+                    regionColIdx = i;
                 }
             }
 
@@ -99,6 +108,26 @@ public class UpdateDrugService {
                     throw new UpdateDrugException(UpdateDrugValidation.INVALID_QUANTITY);
                 }
 
+                // Update pharmacy details if columns are present
+                if (pharmacyNameColIdx >= 0) {
+                    String pharmacyName = getStringCellValue(row.getCell(pharmacyNameColIdx));
+                    if (pharmacyName != null && !pharmacyName.isBlank()) {
+                        pharmacy.setName(pharmacyName.trim());
+                    }
+                }
+                if (cityColIdx >= 0) {
+                    String city = getStringCellValue(row.getCell(cityColIdx));
+                    if (city != null && !city.isBlank()) {
+                        pharmacy.setCity(city.trim());
+                    }
+                }
+                if (regionColIdx >= 0) {
+                    String region = getStringCellValue(row.getCell(regionColIdx));
+                    if (region != null && !region.isBlank()) {
+                        pharmacy.setRegion(region.trim());
+                    }
+                }
+
                 Drug drug = drugRepository.findByName(drugName)
                         .orElseGet(() -> {
                             Drug newDrug = new Drug();
@@ -109,7 +138,8 @@ public class UpdateDrugService {
                             return drugRepository.save(newDrug);
                         });
 
-                Optional<Stock> existingStock = stockRepository.findByPharmacyIdAndDrugId(pharmacy.getID(), drug.getID());
+                Optional<Stock> existingStock = stockRepository.findByPharmacyId_IDAndDrugId_ID(
+                        pharmacy.getID(), drug.getID());
 
                 Stock stock;
                 if (existingStock.isPresent()) {
@@ -126,6 +156,12 @@ public class UpdateDrugService {
                 stockRepository.save(stock);
 
                 rowsProcessed++;
+            }
+
+            // Save pharmacy updates if any details were modified
+            if (pharmacyNameColIdx >= 0 || cityColIdx >= 0 || regionColIdx >= 0) {
+                pharmacy.setUpdatedAt(Instant.now().toString());
+                pharmacyRepository.save(pharmacy);
             }
 
         } catch (UpdateDrugException e) {
