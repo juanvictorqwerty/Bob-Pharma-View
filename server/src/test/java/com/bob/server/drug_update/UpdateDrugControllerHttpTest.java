@@ -91,7 +91,7 @@ class UpdateDrugControllerHttpTest {
                 .file(file)
                 .param("pharmacyId", pharmacyId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Rows processed: 5"));
+                .andExpect(content().string("Success"));
     }
 
     @Test

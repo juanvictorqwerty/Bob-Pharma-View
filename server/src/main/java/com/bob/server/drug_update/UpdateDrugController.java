@@ -80,8 +80,8 @@ public class UpdateDrugController {
         }
 
         try {
-            int rowsProcessed = updateDrugService.updateDrugsFromExcel(file, pharmacyId);
-            return ResponseEntity.ok("Rows processed: " + rowsProcessed);
+            updateDrugService.updateDrugsFromExcel(file, pharmacyId);
+            return ResponseEntity.ok("Success");
         } catch (UpdateDrugException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(e.getMessage());
