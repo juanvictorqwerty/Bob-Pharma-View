@@ -138,7 +138,8 @@ public class UpdateDrugService {
                             return drugRepository.save(newDrug);
                         });
 
-                Optional<Stock> existingStock = stockRepository.findByPharmacyIdAndDrugId(pharmacy.getID(), drug.getID());
+                Optional<Stock> existingStock = stockRepository.findByPharmacyId_IDAndDrugId_ID(
+                        pharmacy.getID(), drug.getID());
 
                 Stock stock;
                 if (existingStock.isPresent()) {

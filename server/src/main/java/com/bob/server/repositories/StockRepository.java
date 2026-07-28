@@ -12,7 +12,7 @@ import com.bob.server.model.Stock;
 public interface StockRepository extends JpaRepository<Stock, UUID> {
     List<Stock> findByPharmacyId(UUID pharmacyId);
     List<Stock> findByDrugId(UUID drugId);
-    Optional<Stock> findByPharmacyIdAndDrugId(UUID pharmacyId, UUID drugId);
+    Optional<Stock> findByPharmacyId_IDAndDrugId_ID(UUID pharmacyId, UUID drugId);
 
     @Query(value = "SELECT s.id AS stockId, s.quantity, s.updated_at AS stockUpdatedAt, " +
             "d.id AS drugId, d.name AS drugName, " +

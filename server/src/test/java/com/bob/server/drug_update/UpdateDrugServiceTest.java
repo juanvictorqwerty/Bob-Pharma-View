@@ -113,7 +113,7 @@ class UpdateDrugServiceTest {
         existingStock.setDrugId(existingDrug);
         existingStock.setQuantity(50);
 
-        when(stockRepository.findByPharmacyIdAndDrugId(pharmacy.getID(), existingDrug.getID()))
+        when(stockRepository.findByPharmacyId_IDAndDrugId_ID(pharmacy.getID(), existingDrug.getID()))
                 .thenReturn(Optional.of(existingStock));
 
         when(stockRepository.save(any(Stock.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -173,7 +173,7 @@ class UpdateDrugServiceTest {
         newDrug.setAllowed(true);
         when(drugRepository.save(any(Drug.class))).thenReturn(newDrug);
 
-        when(stockRepository.findByPharmacyIdAndDrugId(pharmacy.getID(), newDrug.getID()))
+        when(stockRepository.findByPharmacyId_IDAndDrugId_ID(pharmacy.getID(), newDrug.getID()))
                 .thenReturn(Optional.empty());
 
         when(stockRepository.save(any(Stock.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -313,7 +313,7 @@ class UpdateDrugServiceTest {
         existingStock.setPharmacyId(pharmacy);
         existingStock.setDrugId(collapsedDrug);
         existingStock.setQuantity(10);
-        when(stockRepository.findByPharmacyIdAndDrugId(pharmacy.getID(), collapsedDrug.getID()))
+        when(stockRepository.findByPharmacyId_IDAndDrugId_ID(pharmacy.getID(), collapsedDrug.getID()))
                 .thenReturn(Optional.of(existingStock));
         when(stockRepository.save(any(Stock.class))).thenAnswer(inv -> inv.getArgument(0));
 
