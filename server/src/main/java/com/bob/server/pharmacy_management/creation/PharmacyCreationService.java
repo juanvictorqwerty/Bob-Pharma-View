@@ -69,6 +69,17 @@ public class PharmacyCreationService {
         }
 
         Pharmacy saved = pharmacyRepository.save(pharmacy);
+
+        // Automatically add the creator as pharmacy staff with PHARMACY_ADMIN role
+        PharmacyStaff staff = new PharmacyStaff();
+        staff.setUserId(creator);
+        staff.setPharmacyId(saved);
+        staff.setRole("PHARMACY_ADMIN");
+        staff.setCreatedAt(Instant.now().toString());
+        staff.setUpdatedAt(Instant.now().toString());
+        staff.setSuspended(false);
+        pharmacyStaffRepository.save(staff);
+
         return mapToResponseDTO(saved);
     }
 
