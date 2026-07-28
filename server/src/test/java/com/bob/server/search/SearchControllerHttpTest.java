@@ -2,6 +2,7 @@ package com.bob.server.search;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -125,5 +126,15 @@ class SearchControllerHttpTest {
     void searchDrugsWithoutQueryShouldReturn400() throws Exception {
         mockMvc.perform(get("/api/search/drugs"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void searchDrugsWhenServiceThrowsShouldReturn400() throws Exception {
+        when(searchService.search(any())).thenThrow(new SearchException(SearchValidation.EMPTY_QUERY));
+
+        mockMvc.perform(get("/api/search/drugs")
+                .param("query", "aspirin"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(SearchValidation.EMPTY_QUERY.getMessage()));
     }
 }
