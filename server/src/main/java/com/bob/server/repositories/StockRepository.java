@@ -26,11 +26,11 @@ public interface StockRepository extends JpaRepository<Stock, UUID> {
             "AND s.quantity > 0 " +
             "AND (LOWER(d.name) = LOWER(:query) " +
             "     OR LOWER(d.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
-            "     OR d.name % :query) " +
+            "     OR CAST(d.name AS text) % CAST(:query AS text)) " +
             "AND ST_DWithin(p.location, ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326), :radiusMeters) " +
             "ORDER BY " +
             "  CASE WHEN LOWER(d.name) = LOWER(:query) THEN 0 ELSE 1 END, " +
-            "  similarity(d.name, :query) DESC",
+            "  similarity(CAST(d.name AS text), CAST(:query AS text)) DESC",
             nativeQuery = true)
         List<Object[]> searchDrugsGeo(@Param("query") String query,
                                     @Param("latitude") double latitude,
@@ -48,10 +48,10 @@ public interface StockRepository extends JpaRepository<Stock, UUID> {
             "AND s.quantity > 0 " +
             "AND (LOWER(d.name) = LOWER(:query) " +
             "     OR LOWER(d.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
-            "     OR d.name % :query) " +
+            "     OR CAST(d.name AS text) % CAST(:query AS text)) " +
             "ORDER BY " +
             "  CASE WHEN LOWER(d.name) = LOWER(:query) THEN 0 ELSE 1 END, " +
-            "  similarity(d.name, :query) DESC",
+            "  similarity(CAST(d.name AS text), CAST(:query AS text)) DESC",
             nativeQuery = true)
         List<Object[]> searchDrugsNational(@Param("query") String query);
 }
