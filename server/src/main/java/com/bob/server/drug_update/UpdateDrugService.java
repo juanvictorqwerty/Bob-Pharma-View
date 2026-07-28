@@ -46,7 +46,7 @@ public class UpdateDrugService {
         }
 
         String filename = file.getOriginalFilename();
-        if (filename == null || !filename.toLowerCase().endsWith(".xlsx")) {
+        if (filename == null || !(filename.toLowerCase().endsWith(".xlsx") || filename.toLowerCase().endsWith(".xls"))) {
             throw new UpdateDrugException(UpdateDrugValidation.INVALID_FORMAT);
         }
 
