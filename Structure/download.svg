@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3361.152999999999 274.70000000000005" width="3361.152999999999" height="274.70000000000005" style="--bg:#1F1F1F;--fg:#CCCCCC;--line:#CCCCCC;--accent:#0078D4;--muted:#CCCCCCCC;--surface:#181818;--border:#CCCCCC;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<polyline class="edge" data-from="Root" data-to="PublicBranch" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1309.74325,76.9 1309.74325,91.9 272.8637499999997,91.9 272.8637499999997,106.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PublicBranch" data-to="P1" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="272.8637499999997,143.8 272.8637499999997,164.8 131.7405,164.8 131.7405,185.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PublicBranch" data-to="P2" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="272.8637499999997,143.8 272.8637499999997,164.8 413.98699999999985,164.8 413.98699999999985,185.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Root" data-to="AuthBranch" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1309.74325,76.9 1309.74325,91.9 792.4889999999998,91.9 792.4889999999998,106.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="AuthBranch" data-to="A1" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="792.4889999999998,143.8 792.4889999999998,164.8 655.8489999999997,164.8 655.8489999999997,185.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="AuthBranch" data-to="A2" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="792.4889999999998,143.8 792.4889999999998,164.8 792.4889999999997,164.8 792.4889999999997,185.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="AuthBranch" data-to="A3" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="792.4889999999998,143.8 792.4889999999998,164.8 962.1034999999998,164.8 962.1034999999998,185.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Root" data-to="PortalBranch" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1309.74325,76.9 1309.74325,91.9 1826.9974999999995,91.9 1826.9974999999995,106.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PortalBranch" data-to="M1" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1826.9974999999995,143.8 1826.9974999999995,164.8 1209.8934999999997,164.8 1209.8934999999997,185.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PortalBranch" data-to="M2" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1826.9974999999995,143.8 1826.9974999999995,164.8 1506.2189999999996,164.8 1506.2189999999996,185.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PortalBranch" data-to="M3" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1826.9974999999995,143.8 1826.9974999999995,164.8 1826.9974999999995,164.8 1826.9974999999995,185.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PortalBranch" data-to="M4" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1826.9974999999995,143.8 1826.9974999999995,164.8 2173.7109999999993,164.8 2173.7109999999993,185.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PortalBranch" data-to="M5" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1826.9974999999995,143.8 1826.9974999999995,164.8 2517.830999999999,164.8 2517.830999999999,185.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Root" data-to="AdminBranch" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1309.74325,76.9 1309.74325,91.9 3035.307749999999,91.9 3035.307749999999,106.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="AdminBranch" data-to="AD1" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="3035.307749999999,143.8 3035.307749999999,164.8 2873.8069999999993,164.8 2873.8069999999993,185.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="AdminBranch" data-to="AD2" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="3035.307749999999,143.8 3035.307749999999,164.8 3196.808499999999,164.8 3196.808499999999,185.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="node" data-id="Root" data-label="BobPharma Web App Root (/)" data-shape="rectangle">
+  <rect x="1205.77625" y="40" width="207.934" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1309.74325" y="58.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">BobPharma Web App Root (/)</text>
+</g>
+<g class="node" data-id="PublicBranch" data-label="1. Public Area" data-shape="rectangle">
+  <rect x="213.3567499999997" y="106.9" width="119.01400000000001" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="272.8637499999997" y="125.35000000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">1. Public Area</text>
+</g>
+<g class="node" data-id="P1" data-label="/ (Home &amp; Global Search)" data-shape="rectangle">
+  <rect x="40" y="185.8" width="183.481" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="131.7405" y="204.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/ (Home &amp; Global Search)</text>
+</g>
+<g class="node" data-id="P2" data-label="/pharmacies/:id (Pharmacy Details &amp; Spatial Map)" data-shape="rectangle">
+  <rect x="251.48099999999988" y="185.8" width="325.01199999999994" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="413.98699999999985" y="204.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/pharmacies/:id (Pharmacy Details &amp; Spatial Map)</text>
+</g>
+<g class="node" data-id="AuthBranch" data-label="2. Authentication Area" data-shape="rectangle">
+  <rect x="707.7879999999998" y="106.9" width="169.402" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="792.4889999999998" y="125.35000000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">2. Authentication Area</text>
+</g>
+<g class="node" data-id="A1" data-label="/auth/login" data-shape="rectangle">
+  <rect x="604.4929999999997" y="185.8" width="102.712" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="655.8489999999997" y="204.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/auth/login</text>
+</g>
+<g class="node" data-id="A2" data-label="/auth/signup" data-shape="rectangle">
+  <rect x="735.2049999999997" y="185.8" width="114.568" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="792.4889999999997" y="204.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/auth/signup</text>
+</g>
+<g class="node" data-id="A3" data-label="/auth/reset-password" data-shape="rectangle">
+  <rect x="877.7729999999998" y="185.8" width="168.66099999999997" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="962.1034999999998" y="204.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/auth/reset-password</text>
+</g>
+<g class="node" data-id="PortalBranch" data-label="3. Pharmacy Owner &amp; Staff Portal" data-shape="rectangle">
+  <rect x="1711.5449999999996" y="106.9" width="230.90499999999994" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1826.9974999999995" y="125.35000000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">3. Pharmacy Owner &amp; Staff Portal</text>
+</g>
+<g class="node" data-id="M1" data-label="/dashboard (My Pharmacies Overview)" data-shape="rectangle">
+  <rect x="1074.4339999999997" y="185.8" width="270.919" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1209.8934999999997" y="204.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/dashboard (My Pharmacies Overview)</text>
+</g>
+<g class="node" data-id="M2" data-label="/pharmacies/new (Register Pharmacy)" data-shape="rectangle">
+  <rect x="1373.3529999999996" y="185.8" width="265.73199999999997" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1506.2189999999996" y="204.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/pharmacies/new (Register Pharmacy)</text>
+</g>
+<g class="node" data-id="M3" data-label="/pharmacies/:id/inventory (Stock &amp; Excel Import)" data-shape="rectangle">
+  <rect x="1667.0849999999996" y="185.8" width="319.8249999999999" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1826.9974999999995" y="204.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/pharmacies/:id/inventory (Stock &amp; Excel Import)</text>
+</g>
+<g class="node" data-id="M4" data-label="/pharmacies/:id/staff (Team &amp; Role Management)" data-shape="rectangle">
+  <rect x="2014.9099999999994" y="185.8" width="317.602" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="2173.7109999999993" y="204.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/pharmacies/:id/staff (Team &amp; Role Management)</text>
+</g>
+<g class="node" data-id="M5" data-label="/pharmacies/:id/settings (Settings &amp; Ownership)" data-shape="rectangle">
+  <rect x="2360.5119999999993" y="185.8" width="314.63799999999986" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="2517.830999999999" y="204.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/pharmacies/:id/settings (Settings &amp; Ownership)</text>
+</g>
+<g class="node" data-id="AdminBranch" data-label="4. System Admin Portal" data-shape="rectangle">
+  <rect x="2948.754249999999" y="106.9" width="173.10699999999997" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="3035.307749999999" y="125.35000000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">4. System Admin Portal</text>
+</g>
+<g class="node" data-id="AD1" data-label="/admin/pharmacies (Approval &amp; Suspension Queue)" data-shape="rectangle">
+  <rect x="2703.149999999999" y="185.8" width="341.3139999999999" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="2873.8069999999993" y="204.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/admin/pharmacies (Approval &amp; Suspension Queue)</text>
+</g>
+<g class="node" data-id="AD2" data-label="/admin/invites (Send System Invites)" data-shape="rectangle">
+  <rect x="3072.463999999999" y="185.8" width="248.68899999999994" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="3196.808499999999" y="204.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">/admin/invites (Send System Invites)</text>
+</g>
+</svg>
